@@ -10,25 +10,23 @@ def get_context(context):
     selected_id = frappe.form_dict.get("student") or children[0].name
     selected_student = next((c for c in children if c.name == selected_id), children[0])
 
-    results = frappe.get_all(
-        "Student Term Result",
+    payments = frappe.get_all(
+        "Fee Payment",
         filters={"student": selected_student.name},
-        fields=["term", "average", "division", "division_display", "total_points"],
-        order_by="term"
+        fields=["term", "amount_paid", "payment_date", "payment_method", "status", "receipt_number", "balance", "overpayment"],
+        order_by="payment_date desc"
     )
 
-    for r in results:
-        term_doc = frappe.get_cached_doc("Term", r.term)
-        r.term_name = term_doc.term_name
-        r.subjects = frappe.get_all(
-            "Exam Result",
-            filters={"student": selected_student.name, "exam": ["in", frappe.get_all("Exam", filters={"term": r.term}, pluck="name")]},
-            fields=["subject", "marks", "grade"]
-        )
+    for p in payments:
+        term_doc = frappe.get_cached_doc("Term", p.term)
+        p.term_name = term_doc.term_name
+
+    current_balance = payments[0].balance if payments else 0
 
     context.guardian = guardian
     context.children = children
     context.selected_student = selected_student
-    context.results = results
+    context.payments = payments
+    context.current_balance = current_balance
     context.notification_count = get_notification_count(children)
     context.no_cache = 1

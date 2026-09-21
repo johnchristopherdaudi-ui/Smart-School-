@@ -10,6 +10,8 @@ class FeePayment(Document):
         self.set_status_and_balance()
 
     def set_amount_due(self):
+        self.amount_due = 0  # default kwanza, itabadilishwa chini kama Fee Structure ikipatikana
+
         student_class = frappe.get_value("Student", self.student, "current_class")
 
         fee_structure = frappe.get_all(
@@ -20,6 +22,12 @@ class FeePayment(Document):
 
         if fee_structure:
             self.amount_due = fee_structure[0].amount
+        else:
+            frappe.msgprint(
+                "Hakuna Fee Structure iliyowekwa kwa class na term hii. "
+                "Balance haitohesabika sahihi mpaka Fee Structure iundwe.",
+                alert=True
+            )
 
     def set_receipt_number(self):
         if not self.receipt_number:

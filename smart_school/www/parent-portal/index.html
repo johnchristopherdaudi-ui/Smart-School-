@@ -3,117 +3,92 @@
 {% block style %}
 <style>
 :root {
-    --sp-primary: #0d3b66;
-    --sp-accent: #ffb703;
-    --sp-bg: #f4f6f9;
-    --sp-text: #22333b;
+--sp-primary: #0d3b66;
+--sp-accent: #ffb703;
+--sp-bg: #f4f6f9;
+--sp-text: #22333b;
 }
-
 body { background: var(--sp-bg); }
-
-.sp-navbar {
-    background: var(--sp-primary);
-    padding: 14px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.sp-brand {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.sp-brand span.sp-logo {
-    background: var(--sp-accent);
-    color: var(--sp-primary);
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800;
-}
-
-.sp-nav-links a {
-    color: #dfe7f0;
-    margin-left: 22px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-}
+.sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.sp-nav-links { display: flex; align-items: center; }
+.sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
 .sp-nav-links a:hover { color: var(--sp-accent); }
-
 .sp-container { max-width: 1100px; margin: 0 auto; padding: 35px 20px; }
-
 .sp-welcome { font-size: 24px; font-weight: 700; color: var(--sp-text); margin-bottom: 25px; }
 
-.sp-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    transition: transform .15s ease;
-    margin-bottom: 20px;
-}
+.sp-card { background: #fff; border-radius: 12px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); transition: transform .15s ease; margin-bottom: 20px; display: flex; gap: 16px; align-items: center; }
 .sp-card:hover { transform: translateY(-3px); }
 
-.sp-card h4 { color: var(--sp-primary); margin-bottom: 6px; }
-.sp-card p { color: #555; margin: 3px 0; font-size: 14px; }
-
-.sp-badge {
-    display: inline-block;
-    background: var(--sp-accent);
-    color: var(--sp-primary);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
+.sp-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.sp-avatar-fallback {
+width: 60px; height: 60px; border-radius: 50%;
+background: var(--sp-primary); color: var(--sp-accent);
+display: flex; align-items: center; justify-content: center;
+font-weight: 800; font-size: 20px; flex-shrink: 0;
 }
 
-.sp-card a.sp-link {
-    display: inline-block;
-    margin-top: 10px;
-    color: var(--sp-primary);
-    font-weight: 600;
-    font-size: 14px;
-    text-decoration: none;
-}
+.sp-card-body h4 { color: var(--sp-primary); margin-bottom: 4px; }
+.sp-card-body p { color: #555; margin: 2px 0; font-size: 14px; }
+
+.sp-badge { display: inline-block; background: var(--sp-accent); color: var(--sp-primary); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+.sp-card a.sp-link { display: inline-block; margin-top: 6px; color: var(--sp-primary); font-weight: 600; font-size: 14px; text-decoration: none; }
 .sp-card a.sp-link:hover { text-decoration: underline; }
+
+.sp-bell-wrap { position: relative; margin-left: 22px; }
+.sp-bell { color: #dfe7f0; font-size: 18px; text-decoration: none; }
+.sp-bell:hover { color: var(--sp-accent); }
+.sp-bell-badge {
+    position: absolute; top: -8px; right: -10px;
+    background: #e63946; color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
 </style>
 {% endblock %}
 
 {% block page_content %}
 <nav class="sp-navbar">
-    <a href="/parent-portal" class="sp-brand">
-        <span class="sp-logo">SS</span> Smart School
-    </a>
-    <div class="sp-nav-links">
-        <a href="/parent-portal">Dashboard</a>
-        <a href="/parent-portal/results">Matokeo</a>
-        <a href="/parent-portal/fees">Ada</a>
-        <a href="/parent-portal/announcements">Matangazo</a>
-        <a href="/api/method/logout">Toka</a>
-    </div>
+<a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
+<div class="sp-nav-links">
+<a href="/parent-portal">Dashboard</a>
+<a href="/parent-portal/results">Matokeo</a>
+<a href="/parent-portal/fees">Ada</a>
+<a href="/parent-portal/announcements">Matangazo</a>
+<span class="sp-bell-wrap">
+    <a href="/parent-portal/fees" class="sp-bell">🔔</a>
+    {% if notification_count and notification_count > 0 %}
+    <span class="sp-bell-badge">{{ notification_count }}</span>
+    {% endif %}
+</span>
+<a href="/api/method/logout">Toka</a>
+</div>
 </nav>
 
 <div class="sp-container">
-    <div class="sp-welcome">Karibu, {{ guardian.full_name }} 👋</div>
+<div class="sp-welcome">Karibu, {{ guardian.full_name }} 👋</div>
 
-    <div class="row">
+<div class="row">
         {% for student in children %}
-        <div class="col-md-6">
-            <div class="sp-card">
-                <h4>{{ student.full_name }}</h4>
-                <p>Class: {{ student.current_class or "-" }}</p>
-                <p><span class="sp-badge">{{ student.status or "Active" }}</span></p>
-                <a class="sp-link" href="/parent-portal/student/{{ student.name }}">Ona Zaidi &rarr;</a>
-            </div>
-        </div>
+<div class="col-md-6">
+<div class="sp-card">
+                {% if student.photo %}
+<img class="sp-avatar" src="{{ student.photo }}" alt="{{ student.full_name }}">
+                {% else %}
+<div class="sp-avatar-fallback">{{ student.initials }}</div>
+                {% endif %}
+<div class="sp-card-body">
+<h4>{{ student.full_name }}</h4>
+<p>Class: {{ student.current_class or "-" }}</p>
+<p><span class="sp-badge">{{ student.status or "Active" }}</span></p>
+<a class="sp-link" href="/parent-portal/student/{{ student.name }}">Ona Zaidi &rarr;</a>
+</div>
+</div>
+</div>
         {% endfor %}
-    </div>
+</div>
 </div>
 {% endblock %}

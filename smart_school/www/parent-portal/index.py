@@ -1,25 +1,10 @@
-import frappe
-from frappe import _
+from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notification_count
 
 def get_context(context):
-    # Hakikisha mtu ameingia (logged in)
-    if frappe.session.user == "Guest":
-        frappe.throw(_("Please login to view this page"), frappe.PermissionError)
-
-    # Pata Guardian record inayolingana na huyu User
-    guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
-
-    if not guardian_name:
-        frappe.throw(_("No guardian profile linked to this account"))
-
-    guardian = frappe.get_doc("Guardian", guardian_name)
-
-    # Pata watoto wote kupitia child table
-    children = []
-    for row in guardian.students:
-        student = frappe.get_doc("Student", row.student)
-        children.append(student)
+    guardian = get_logged_in_guardian()
+    children = get_children(guardian)
 
     context.guardian = guardian
     context.children = children
+    context.notification_count = get_notification_count(children)
     context.no_cache = 1
