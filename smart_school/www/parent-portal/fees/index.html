@@ -48,6 +48,15 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     width: 18px; height: 18px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
 }
+.sp-notif-dropdown {
+    display: none; position: absolute; top: 30px; right: 0;
+    background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 280px; max-height: 320px; overflow-y: auto; z-index: 100;
+}
+.sp-notif-dropdown.show { display: block; }
+.sp-notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: var(--sp-text); font-size: 13px; text-decoration: none; }
+.sp-notif-item:hover { background: #f7f9fc; }
+.sp-notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
 </style>
 {% endblock %}
 
@@ -60,10 +69,19 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <a href="/parent-portal/fees">Ada</a>
         <a href="/parent-portal/announcements">Matangazo</a>
         <span class="sp-bell-wrap">
-            <a href="/parent-portal/fees" class="sp-bell">🔔</a>
-            {% if notification_count and notification_count > 0 %}
-            <span class="sp-bell-badge">{{ notification_count }}</span>
+            <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
+            {% if notifications and notifications|length > 0 %}
+            <span class="sp-bell-badge">{{ notifications|length }}</span>
             {% endif %}
+            <div class="sp-notif-dropdown" id="notifDropdown">
+                {% if notifications %}
+                    {% for n in notifications %}
+                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    {% endfor %}
+                {% else %}
+                    <div class="sp-notif-empty">Hakuna arifa mpya</div>
+                {% endif %}
+            </div>
         </span>
         <a href="/api/method/logout">Toka</a>
     </div>
@@ -110,4 +128,15 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <div class="sp-empty">Hakuna malipo yaliyorekodiwa kwa {{ selected_student.full_name }} bado.</div>
     {% endif %}
 </div>
+
+<script>
+function toggleNotifDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('notifDropdown').classList.toggle('show');
+}
+document.addEventListener('click', function() {
+    var dropdown = document.getElementById('notifDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+});
+</script>
 {% endblock %}

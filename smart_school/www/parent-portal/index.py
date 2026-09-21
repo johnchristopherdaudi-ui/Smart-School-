@@ -1,4 +1,4 @@
-from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notification_count
+from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
 
 def get_context(context):
     guardian = get_logged_in_guardian()
@@ -6,5 +6,5 @@ def get_context(context):
 
     context.guardian = guardian
     context.children = children
-    context.notification_count = get_notification_count(children)
+    context.notifications = get_notifications(children)
     context.no_cache = 1
