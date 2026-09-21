@@ -44,7 +44,9 @@ app_license = "mit"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+	"Exam Result": "an_intergrated_academic_management_system/doctype/exam_result/exam_result_list.js"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -123,14 +125,11 @@ app_license = "mit"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
-
+permission_query_conditions = {
+	"Exam Result": "smart_school.permissions.get_teacher_exam_result_permission_query",
+	"Student Term Result": "smart_school.permissions.get_guardian_student_term_result_permission_query",
+	"Student": "smart_school.permissions.get_guardian_student_permission_query",
+}
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -154,10 +153,13 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"smart_school.tasks.all"
-# 	],
+scheduler_events = {
+	"daily": [
+		"smart_school.tasks.calculate_all_risk_scores",
+		"smart_school.tasks.generate_performance_insights"
+	],
+}
+
 # 	"daily": [
 # 		"smart_school.tasks.daily"
 # 	],

@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "autoname": "prompt",
+ "creation": "2026-09-09 14:54:28.352616",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "division",
+  "minimum_points",
+  "maximum_points"
+ ],
+ "fields": [
+  {
+   "fieldname": "division",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Division",
+   "reqd": 1
+  },
+  {
+   "fieldname": "minimum_points",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Minimum Points",
+   "reqd": 1
+  },
+  {
+   "fieldname": "maximum_points",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Maximum Points",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-09 15:00:19.462547",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Division Grading",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
