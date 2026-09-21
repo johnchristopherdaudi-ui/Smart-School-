@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "user",
   "full_name",
   "phone",
   "email",
@@ -34,12 +35,19 @@
    "fieldtype": "Table",
    "label": "Students",
    "options": "Guardian Student Link"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-21 10:08:16.863017",
+ "modified": "2026-09-21 11:47:10.679897",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Guardian",

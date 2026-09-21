@@ -1,0 +1,88 @@
+{% extends "templates/web.html" %}
+
+{% block style %}
+<style>
+:root {
+    --sp-primary: #0d3b66;
+    --sp-accent: #ffb703;
+    --sp-bg: #f4f6f9;
+    --sp-text: #22333b;
+}
+body { background: var(--sp-bg); }
+.sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
+.sp-nav-links a:hover { color: var(--sp-accent); }
+.sp-container { max-width: 1100px; margin: 0 auto; padding: 35px 20px; }
+.sp-welcome { font-size: 24px; font-weight: 700; color: var(--sp-text); margin-bottom: 20px; }
+
+.sp-child-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+.sp-child-tab {
+    padding: 8px 18px; border-radius: 20px; background: #fff; color: var(--sp-primary);
+    text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid #ddd;
+}
+.sp-child-tab.active { background: var(--sp-primary); color: #fff; border-color: var(--sp-primary); }
+
+.sp-term-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.sp-term-card h4 { color: var(--sp-primary); margin-bottom: 10px; }
+.sp-term-stats { display: flex; gap: 25px; margin-bottom: 12px; flex-wrap: wrap; }
+.sp-stat { font-size: 14px; color: #555; }
+.sp-stat b { color: var(--sp-text); font-size: 16px; display: block; }
+
+table.sp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.sp-table th { text-align: left; padding: 8px; border-bottom: 2px solid #eee; color: #777; font-size: 12px; text-transform: uppercase; }
+table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
+
+.sp-empty { color: #888; padding: 30px; text-align: center; background: #fff; border-radius: 12px; }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<nav class="sp-navbar">
+    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
+    <div class="sp-nav-links">
+        <a href="/parent-portal">Dashboard</a>
+        <a href="/parent-portal/results">Matokeo</a>
+        <a href="/parent-portal/fees">Ada</a>
+        <a href="/parent-portal/announcements">Matangazo</a>
+        <a href="/api/method/logout">Toka</a>
+    </div>
+</nav>
+
+<div class="sp-container">
+    <div class="sp-welcome">Matokeo ya Mtoto</div>
+
+    <div class="sp-child-tabs">
+        {% for child in children %}
+        <a class="sp-child-tab {% if child.name == selected_student.name %}active{% endif %}"
+           href="/parent-portal/results?student={{ child.name }}">
+            {{ child.full_name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    {% if results %}
+        {% for r in results %}
+        <div class="sp-term-card">
+            <h4>{{ r.term_name }}</h4>
+            <div class="sp-term-stats">
+                <div class="sp-stat"><b>{{ r.average }}</b>Average</div>
+                <div class="sp-stat"><b>{{ r.division_display or r.division }}</b>Division</div>
+                <div class="sp-stat"><b>{{ r.total_points }}</b>Total Points</div>
+            </div>
+            {% if r.subjects %}
+            <table class="sp-table">
+                <tr><th>Subject</th><th>Marks</th><th>Grade</th></tr>
+                {% for s in r.subjects %}
+                <tr><td>{{ s.subject }}</td><td>{{ s.marks }}</td><td>{{ s.grade }}</td></tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="sp-empty">Hakuna matokeo yaliyopatikana kwa {{ selected_student.full_name }} bado.</div>
+    {% endif %}
+</div>
+{% endblock %}

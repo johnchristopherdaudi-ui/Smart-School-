@@ -25,9 +25,9 @@
   },
   {
    "fieldname": "class_applying",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Class Applying",
-   "options": "Form One\nForm Two\nForm Three\nForm Four"
+   "options": "Class"
   },
   {
    "fieldname": "birth_certificate",
@@ -86,7 +86,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-17 15:16:44.475026",
+ "modified": "2026-09-21 11:02:54.650277",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student Admission",

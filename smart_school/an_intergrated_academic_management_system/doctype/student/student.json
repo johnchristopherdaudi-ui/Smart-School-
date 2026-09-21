@@ -15,7 +15,8 @@
   "status",
   "admission_date",
   "risk_score",
-  "combination"
+  "combination",
+  "admission_reference"
  ],
  "fields": [
   {
@@ -73,12 +74,19 @@
    "fieldtype": "Link",
    "label": "Combination",
    "options": "Combination"
+  },
+  {
+   "fieldname": "admission_reference",
+   "fieldtype": "Link",
+   "label": "Admission Reference",
+   "options": "Student Admission",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:20:36.420851",
+ "modified": "2026-09-21 11:06:22.006987",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student",
