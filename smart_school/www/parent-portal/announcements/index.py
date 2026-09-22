@@ -12,14 +12,39 @@ def get_context(context):
 
     announcements = []
     if class_map:
-        announcements = frappe.get_all(
-            "Announcement",
-            filters={"class": ["in", list(class_map.keys())]},
-            fields=["name", "tittle", "message", "date", "class", "posted_by"],
-            order_by="date desc"
+        class_names = list(class_map.keys())
+
+        # Pata majina ya Announcement zenye angalau class moja inayolingana
+        announcement_names = frappe.get_all(
+            "Announcement Class",
+            filters={"class": ["in", class_names]},
+            pluck="parent",
+            distinct=True
         )
-        for a in announcements:
-            a["for_students"] = ", ".join(class_map.get(a["class"], []))
+
+        if announcement_names:
+            raw_announcements = frappe.get_all(
+                "Announcement",
+                filters={"name": ["in", announcement_names]},
+                fields=["name", "tittle", "message", "date", "posted_by"],
+                order_by="date desc"
+            )
+
+            for a in raw_announcements:
+                # Pata class zote za tangazo hili
+                doc_classes = frappe.get_all(
+                    "Announcement Class",
+                    filters={"parent": a.name},
+                    pluck="class"
+                )
+                # Onyesha ni watoto gani wa guardian huyu wanahusika
+                relevant_students = []
+                for c in doc_classes:
+                    relevant_students.extend(class_map.get(c, []))
+
+                a["class_list"] = ", ".join(doc_classes)
+                a["for_students"] = ", ".join(set(relevant_students))
+                announcements.append(a)
 
     context.guardian = guardian
     context.children = children

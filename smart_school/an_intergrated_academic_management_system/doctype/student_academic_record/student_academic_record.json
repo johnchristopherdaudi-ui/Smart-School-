@@ -7,7 +7,9 @@
  "field_order": [
   "student",
   "academic_year",
-  "class"
+  "class",
+  "final_average",
+  "final_division"
  ],
  "fields": [
   {
@@ -27,12 +29,24 @@
    "fieldtype": "Link",
    "label": "Class",
    "options": "Class"
+  },
+  {
+   "fieldname": "final_average",
+   "fieldtype": "Float",
+   "label": "Final Average",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_division",
+   "fieldtype": "Data",
+   "label": "Final Division",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-09 13:54:06.693957",
+ "modified": "2026-09-22 11:56:44.041490",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student Academic Record",

@@ -8,9 +8,10 @@
  "field_order": [
   "tittle",
   "message",
-  "date",
   "class",
-  "posted_by"
+  "date",
+  "posted_by",
+  "classes"
  ],
  "fields": [
   {
@@ -37,6 +38,7 @@
   {
    "fieldname": "class",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Class",
    "options": "Class"
   },
@@ -45,12 +47,18 @@
    "fieldtype": "Link",
    "label": "Posted by",
    "options": "User"
+  },
+  {
+   "fieldname": "classes",
+   "fieldtype": "Table MultiSelect",
+   "label": "Classes",
+   "options": "Announcement Class"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:30:47.085848",
+ "modified": "2026-09-22 14:46:26.183424",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Announcement",

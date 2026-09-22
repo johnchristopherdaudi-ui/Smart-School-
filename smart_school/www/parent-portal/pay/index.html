@@ -1,0 +1,102 @@
+{% extends "templates/web.html" %}
+
+{% block style %}
+<style>
+:root {
+    --sp-primary: #0d3b66;
+    --sp-accent: #ffb703;
+    --sp-bg: #f4f6f9;
+    --sp-text: #22333b;
+}
+body { background: var(--sp-bg); }
+.sp-navbar { background: var(--sp-primary); padding: 14px 30px; }
+.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.sp-container { max-width: 480px; margin: 40px auto; padding: 0 20px; }
+.sp-pay-card { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); }
+.sp-pay-card h3 { color: var(--sp-primary); margin-bottom: 6px; }
+.sp-pay-summary { background: var(--sp-bg); border-radius: 10px; padding: 16px; margin-bottom: 22px; font-size: 14px; color: #555; }
+.sp-pay-summary b { color: var(--sp-primary); }
+.sp-field { margin-bottom: 16px; }
+.sp-field label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: 600; }
+.sp-field select, .sp-field input {
+    width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;
+}
+.sp-submit-btn {
+    width: 100%; background: var(--sp-primary); color: #fff; border: none;
+    padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px;
+}
+.sp-submit-btn:hover { opacity: 0.9; }
+.sp-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<nav class="sp-navbar">
+    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
+</nav>
+
+<div class="sp-container">
+    <div class="sp-pay-card">
+        <h3>Lipa Ada</h3>
+        <div class="sp-pay-summary">
+            <b>{{ selected_student.full_name }}</b> &middot; {{ term_name }}<br>
+            Kiasi: <b>{{ "{:,.0f}".format(amount|float) }} TZS</b>
+        </div>
+
+        <div class="sp-field">
+            <label>Chagua Njia ya Malipo</label>
+            <select id="provider">
+                <option value="M-Pesa">M-Pesa</option>
+                <option value="Tigo Pesa">Tigo Pesa</option>
+                <option value="Airtel Money">Airtel Money</option>
+                <option value="Halopesa">Halopesa</option>
+                <option value="Azampesa">Azampesa</option>
+            </select>
+        </div>
+
+        <div class="sp-field">
+            <label>Namba ya Simu</label>
+            <input type="text" id="phone" placeholder="07XXXXXXXX">
+        </div>
+
+        <button class="sp-submit-btn" id="submitBtn" onclick="submitPayment()">Endelea na Malipo</button>
+    </div>
+</div>
+
+<script>
+function submitPayment() {
+    var phone = document.getElementById('phone').value;
+    var provider = document.getElementById('provider').value;
+    var btn = document.getElementById('submitBtn');
+
+    if (!phone) {
+        frappe.msgprint("Tafadhali weka namba ya simu");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Inasubiri...";
+
+    frappe.call({
+        method: 'smart_school.portal_utils.create_payment_request',
+        args: {
+            student: "{{ selected_student.name }}",
+            term: "{{ term }}",
+            amount: "{{ amount }}",
+            provider: provider,
+            phone_number: phone
+        },
+        callback: function(r) {
+            if (r.message && r.message.reference) {
+                window.location.href = "/parent-portal/pay-confirm?ref=" + r.message.reference + "&term=" + r.message.term;
+            } else {
+                frappe.msgprint("Hitilafu imetokea. Jaribu tena.");
+                btn.disabled = false;
+                btn.innerText = "Endelea na Malipo";
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

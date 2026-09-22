@@ -158,7 +158,8 @@ permission_query_conditions = {
 scheduler_events = {
 	"daily": [
 		"smart_school.tasks.calculate_all_risk_scores",
-		"smart_school.tasks.generate_performance_insights"
+		"smart_school.tasks.generate_performance_insights",
+		"smart_school.tasks.create_academic_records_for_ended_years"
 	],
 }
 

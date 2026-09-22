@@ -67,6 +67,7 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 <a href="/parent-portal/results">Matokeo</a>
 <a href="/parent-portal/fees">Ada</a>
 <a href="/parent-portal/announcements">Matangazo</a>
+        <a href="/parent-portal/discipline">Nidhamu</a>
 <span class="sp-bell-wrap">
     <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
     {% if unseen_count and unseen_count > 0 %}
@@ -102,7 +103,7 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 <h4>{{ student.full_name }}</h4>
 <p>Class: {{ student.current_class or "-" }}</p>
 <p><span class="sp-badge">{{ student.status or "Active" }}</span></p>
-<a class="sp-link" href="/parent-portal/student/{{ student.name }}">Ona Zaidi &rarr;</a>
+<a class="sp-link" href="/parent-portal/student?student={{ student.name }}">Ona Zaidi &rarr;</a>
 </div>
 </div>
 </div>

@@ -78,3 +78,59 @@ def mark_announcements_seen():
         frappe.db.set_value("Guardian", guardian_name, "last_announcement_seen", now_datetime())
         frappe.db.commit()
     return {"success": True}
+
+
+@frappe.whitelist()
+def create_payment_request(student, term, amount, provider, phone_number):
+    guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
+    if not guardian_name:
+        frappe.throw("No guardian profile linked to this account")
+
+    guardian = frappe.get_doc("Guardian", guardian_name)
+    allowed_students = [row.student for row in guardian.students]
+    if student not in allowed_students:
+        frappe.throw("Huna ruhusa ya kulipia mwanafunzi huyu")
+
+    log = frappe.new_doc("Payment Gateway Log")
+    log.student = student
+    log.amount = amount
+    log.phone_number = phone_number
+    log.provider = provider
+    log.status = "Pending"
+    log.transaction_reference = frappe.generate_hash(length=10).upper()
+    log.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+    return {"reference": log.transaction_reference, "term": term}
+
+
+@frappe.whitelist()
+def confirm_demo_payment(reference, term, success):
+    log = frappe.get_doc("Payment Gateway Log", {"transaction_reference": reference})
+
+    success = frappe.utils.cint(success)
+
+    if success:
+        log.status = "Success"
+        log.response_message = "Demo payment completed successfully"
+        log.save(ignore_permissions=True)
+
+        fee_payment = frappe.new_doc("Fee Payment")
+        fee_payment.student = log.student
+        fee_payment.term = term
+        fee_payment.amount_paid = log.amount
+        fee_payment.payment_date = frappe.utils.today()
+        fee_payment.payment_method = log.provider
+        fee_payment.insert(ignore_permissions=True)
+
+        log.fee_payment = fee_payment.name
+        log.save(ignore_permissions=True)
+        frappe.db.commit()
+
+        return {"success": True, "fee_payment": fee_payment.name}
+    else:
+        log.status = "Failed"
+        log.response_message = "Demo payment failed"
+        log.save(ignore_permissions=True)
+        frappe.db.commit()
+        return {"success": False}

@@ -16,15 +16,19 @@ body { background: var(--sp-bg); }
 .sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
 .sp-nav-links a:hover { color: var(--sp-accent); }
 .sp-container { max-width: 900px; margin: 0 auto; padding: 35px 20px; }
-.sp-welcome { font-size: 24px; font-weight: 700; color: var(--sp-text); margin-bottom: 25px; }
 
-.sp-announcement { background: #fff; border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 5px solid var(--sp-accent); }
-.sp-announcement h4 { color: var(--sp-primary); margin-bottom: 6px; }
-.sp-announcement .meta { font-size: 12px; color: #999; margin-bottom: 10px; }
-.sp-announcement .body { color: #444; font-size: 14px; line-height: 1.6; }
-.sp-tag { display: inline-block; background: #eef3f8; color: var(--sp-primary); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+.sp-profile-header { background: #fff; border-radius: 16px; padding: 30px; margin-bottom: 25px; display: flex; align-items: center; gap: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.sp-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; }
+.sp-avatar-lg-fallback { width: 90px; height: 90px; border-radius: 50%; background: var(--sp-primary); color: var(--sp-accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 28px; }
+.sp-profile-header h2 { color: var(--sp-primary); margin-bottom: 4px; }
+.sp-profile-header p { color: #666; font-size: 14px; margin: 2px 0; }
 
-.sp-empty { color: #888; padding: 30px; text-align: center; background: #fff; border-radius: 12px; }
+.sp-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 25px; }
+.sp-summary-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); text-decoration: none; display: block; transition: transform .15s ease; }
+.sp-summary-card:hover { transform: translateY(-3px); }
+.sp-summary-card .label { font-size: 13px; color: #888; margin-bottom: 6px; }
+.sp-summary-card .value { font-size: 22px; font-weight: 800; color: var(--sp-primary); }
+.sp-summary-card .sub { font-size: 12px; color: #aaa; margin-top: 4px; }
 
 .sp-bell-wrap { position: relative; margin-left: 22px; }
 .sp-bell { color: #dfe7f0; font-size: 18px; text-decoration: none; }
@@ -77,21 +81,43 @@ body { background: var(--sp-bg); }
 </nav>
 
 <div class="sp-container">
-    <div class="sp-welcome">Matangazo ya Shule</div>
-
-    {% if announcements %}
-        {% for a in announcements %}
-        <div class="sp-announcement">
-            <span class="sp-tag">{{ a.class_list }}</span>
-            <span class="sp-tag">Kwa: {{ a.for_students }}</span>
-            <h4>{{ a.tittle }}</h4>
-            <div class="meta">{{ a.date }} &middot; {{ a.posted_by or "Shule" }}</div>
-            <div class="body">{{ a.message }}</div>
+    <div class="sp-profile-header">
+        {% if selected_student.photo %}
+            <img class="sp-avatar-lg" src="{{ selected_student.photo }}" alt="{{ selected_student.full_name }}">
+        {% else %}
+            <div class="sp-avatar-lg-fallback">{{ selected_student.initials }}</div>
+        {% endif %}
+        <div>
+            <h2>{{ selected_student.full_name }}</h2>
+            <p>Class: {{ selected_student.current_class or "-" }}</p>
+            <p>Status: {{ selected_student.status or "Active" }}</p>
         </div>
-        {% endfor %}
-    {% else %}
-        <div class="sp-empty">Hakuna matangazo kwa sasa.</div>
-    {% endif %}
+    </div>
+
+    <div class="sp-summary-grid">
+        <a class="sp-summary-card" href="/parent-portal/results?student={{ selected_student.name }}">
+            <div class="label">Matokeo ya Karibuni</div>
+            {% if latest_result %}
+                <div class="value">{{ latest_result.average }}</div>
+                <div class="sub">{{ latest_result.term_name }} &middot; {{ latest_result.division_display or latest_result.division }}</div>
+            {% else %}
+                <div class="value">-</div>
+                <div class="sub">Hakuna matokeo bado</div>
+            {% endif %}
+        </a>
+
+        <a class="sp-summary-card" href="/parent-portal/fees?student={{ selected_student.name }}">
+            <div class="label">Balance ya Ada</div>
+            <div class="value">{{ "{:,.0f}".format(current_balance) }}</div>
+            <div class="sub">TZS iliyobaki</div>
+        </a>
+
+        <a class="sp-summary-card" href="/parent-portal/discipline?student={{ selected_student.name }}">
+            <div class="label">Rekodi za Nidhamu</div>
+            <div class="value">{{ discipline_count }}</div>
+            <div class="sub">jumla ya matukio</div>
+        </a>
+    </div>
 </div>
 
 <script>

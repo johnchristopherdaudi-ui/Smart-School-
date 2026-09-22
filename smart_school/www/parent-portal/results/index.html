@@ -22,6 +22,8 @@ body { background: var(--sp-bg); }
 .sp-child-tab { padding: 8px 18px; border-radius: 20px; background: #fff; color: var(--sp-primary); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid #ddd; }
 .sp-child-tab.active { background: var(--sp-primary); color: #fff; border-color: var(--sp-primary); }
 
+.sp-chart-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+
 .sp-term-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 .sp-term-card h4 { color: var(--sp-primary); margin-bottom: 10px; }
 .sp-term-stats { display: flex; gap: 25px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -64,6 +66,7 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
         <a href="/parent-portal/results">Matokeo</a>
         <a href="/parent-portal/fees">Ada</a>
         <a href="/parent-portal/announcements">Matangazo</a>
+        <a href="/parent-portal/discipline">Nidhamu</a>
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
@@ -96,6 +99,12 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     </div>
 
     {% if results %}
+    <div class="sp-chart-card">
+        <canvas id="performanceChart" height="90"></canvas>
+    </div>
+    {% endif %}
+
+    {% if results %}
         {% for r in results %}
         <div class="sp-term-card">
             <h4>{{ r.term_name }}</h4>
@@ -119,6 +128,7 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     {% endif %}
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 function toggleNotifDropdown(e) {
     e.stopPropagation();
@@ -129,5 +139,29 @@ document.addEventListener('click', function() {
     var dropdown = document.getElementById('notifDropdown');
     if (dropdown) dropdown.classList.remove('show');
 });
+
+var chartCanvas = document.getElementById('performanceChart');
+if (chartCanvas) {
+    new Chart(chartCanvas, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels }},
+            datasets: [{
+                label: 'Average',
+                data: {{ chart_values }},
+                borderColor: '#0d3b66',
+                backgroundColor: 'rgba(13, 59, 102, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#ffb703',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
 </script>
 {% endblock %}

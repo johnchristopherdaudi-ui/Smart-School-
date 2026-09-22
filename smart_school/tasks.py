@@ -127,3 +127,60 @@ def check_class_performance(class_name):
             "date_generated": frappe.utils.today(),
             "change_percentage": round(change_percentage, 1)
         }).insert(ignore_permissions=True)
+
+def create_academic_records_for_ended_years():
+    """Inaendesha kila siku. Ikiwa Academic Year imeisha leo, unda
+    Student Academic Record kwa kila mwanafunzi Active."""
+
+    ended_years = frappe.get_all(
+        "Academic Year",
+        filters={"end_date": frappe.utils.today()},
+        fields=["name"]
+    )
+
+    for year in ended_years:
+        active_students = frappe.get_all(
+            "Student",
+            filters={"status": "Active"},
+            fields=["name", "current_class"]
+        )
+
+        for student in active_students:
+            exists = frappe.db.exists("Student Academic Record", {
+                "student": student.name,
+                "academic_year": year.name
+            })
+            if exists:
+                continue
+
+            terms_this_year = frappe.get_all(
+                "Term",
+                filters={"academic_year": year.name},
+                fields=["name"],
+                order_by="end_date desc",
+                limit=1
+            )
+
+            final_average = None
+            final_division = None
+            if terms_this_year:
+                last_term_result = frappe.get_all(
+                    "Student Term Result",
+                    filters={"student": student.name, "term": terms_this_year[0].name},
+                    fields=["average", "division_display", "division"],
+                    limit=1
+                )
+                if last_term_result:
+                    final_average = last_term_result[0].average
+                    final_division = last_term_result[0].division_display or last_term_result[0].division
+
+            record = frappe.new_doc("Student Academic Record")
+            record.student = student.name
+            record.academic_year = year.name
+            record.set("class", student.current_class)
+            record.final_average = final_average
+            record.final_division = final_division
+            record.insert(ignore_permissions=True)
+
+        frappe.db.commit()
+        frappe.logger().info(f"Student Academic Records created for {year.name}")

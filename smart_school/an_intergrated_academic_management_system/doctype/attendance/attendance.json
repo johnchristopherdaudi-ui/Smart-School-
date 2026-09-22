@@ -8,7 +8,8 @@
   "student",
   "date",
   "class",
-  "status"
+  "status",
+  "term"
  ],
  "fields": [
   {
@@ -33,12 +34,19 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Present\nAbsent"
+  },
+  {
+   "fieldname": "term",
+   "fieldtype": "Link",
+   "label": "Term",
+   "options": "Term",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:25:19.110239",
+ "modified": "2026-09-22 12:12:53.609722",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Attendance",

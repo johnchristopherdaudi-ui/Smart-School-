@@ -37,6 +37,8 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
 .sp-status.partial { background: #ffe5b4; color: #8a5300; }
 
 .sp-empty { color: #888; padding: 30px; text-align: center; background: #fff; border-radius: 12px; }
+.sp-pay-btn { background: var(--sp-accent); color: var(--sp-primary); padding: 5px 14px; border-radius: 16px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.sp-pay-btn:hover { opacity: 0.85; }
 
 .sp-bell-wrap { position: relative; margin-left: 22px; }
 .sp-bell { color: #dfe7f0; font-size: 18px; text-decoration: none; }
@@ -68,6 +70,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <a href="/parent-portal/results">Matokeo</a>
         <a href="/parent-portal/fees">Ada</a>
         <a href="/parent-portal/announcements">Matangazo</a>
+        <a href="/parent-portal/discipline">Nidhamu</a>
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
@@ -110,7 +113,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     <div class="sp-table-wrap">
         <table class="sp-table">
             <tr>
-                <th>Term</th><th>Tarehe</th><th>Kiasi</th><th>Njia</th><th>Risiti</th><th>Status</th>
+                <th>Term</th><th>Tarehe</th><th>Kiasi</th><th>Njia</th><th>Risiti</th><th>Status</th><th></th>
             </tr>
             {% for p in payments %}
             <tr>
@@ -120,6 +123,11 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
                 <td>{{ p.payment_method or "-" }}</td>
                 <td>{{ p.receipt_number or "-" }}</td>
                 <td><span class="sp-status {{ p.status|lower }}">{{ p.status }}</span></td>
+                <td>
+                    {% if p.balance and p.balance > 0 %}
+                    <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ p.term }}&amount={{ p.balance }}">Lipa Ada</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>
