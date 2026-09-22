@@ -30,5 +30,7 @@ def get_context(context):
     context.children = children
     context.selected_student = selected_student
     context.results = results
-    context.notifications = get_notifications(children)
+    notif_data = get_notifications(guardian, children)
+    context.notifications = notif_data["items"]
+    context.unseen_count = notif_data["unseen_count"]
     context.no_cache = 1

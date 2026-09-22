@@ -28,5 +28,7 @@ def get_context(context):
     context.selected_student = selected_student
     context.payments = payments
     context.current_balance = current_balance
-    context.notifications = get_notifications(children)
+    notif_data = get_notifications(guardian, children)
+    context.notifications = notif_data["items"]
+    context.unseen_count = notif_data["unseen_count"]
     context.no_cache = 1

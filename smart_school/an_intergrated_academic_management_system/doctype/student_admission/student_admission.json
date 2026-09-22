@@ -15,7 +15,9 @@
   "email",
   "section_break_yfgg",
   "birth_certificate",
-  "previous_school_certificate"
+  "previous_school_certificate",
+  "student",
+  "status"
  ],
  "fields": [
   {
@@ -81,12 +83,26 @@
    "fieldname": "previous_school_certificate",
    "fieldtype": "Attach",
    "label": "Previous School Certificate"
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-21 11:02:54.650277",
+ "modified": "2026-09-22 09:12:13.142323",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student Admission",

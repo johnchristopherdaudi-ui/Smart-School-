@@ -70,8 +70,8 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <a href="/parent-portal/announcements">Matangazo</a>
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
-            {% if notifications and notifications|length > 0 %}
-            <span class="sp-bell-badge">{{ notifications|length }}</span>
+            {% if unseen_count and unseen_count > 0 %}
+            <span class="sp-bell-badge">{{ unseen_count }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
@@ -133,6 +133,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
 function toggleNotifDropdown(e) {
     e.stopPropagation();
     document.getElementById('notifDropdown').classList.toggle('show');
+    frappe.call({ method: 'smart_school.portal_utils.mark_announcements_seen' });
 }
 document.addEventListener('click', function() {
     var dropdown = document.getElementById('notifDropdown');

@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import add_days, nowdate
+from frappe.utils import add_days, nowdate, now_datetime, get_datetime
 
 
 def get_logged_in_guardian():
@@ -23,15 +23,19 @@ def get_children(guardian):
     return children
 
 
-def get_notifications(children):
-    """Rudisha list ya notifications halisi (kila moja na message + link)."""
+def get_notifications(guardian, children):
+    """Rudisha list ya notifications zote (kwa dropdown) + idadi ya 'unseen' (kwa badge)."""
     notifications = []
+    unseen_count = 0
+
     if not children:
-        return notifications
+        return {"items": notifications, "unseen_count": 0}
 
     student_names = [c.name for c in children]
     student_map = {c.name: c.full_name for c in children}
+    last_seen = get_datetime(guardian.last_announcement_seen) if guardian.last_announcement_seen else None
 
+    # Fee debts - daima zinahesabika kwenye badge mpaka zilipwe
     unpaid = frappe.get_all(
         "Fee Payment",
         filters={"student": ["in", student_names], "balance": [">", 0]},
@@ -44,13 +48,16 @@ def get_notifications(children):
             "message": f"{student_map.get(u.student, u.student)}: Deni la {u.balance:,.0f} TZS ({term_name})",
             "link": f"/parent-portal/fees?student={u.student}"
         })
+        unseen_count += 1  # fee daima ni "unseen" mpaka ilipwe
 
+    # Announcements - zinahesabika kwenye badge tu kama ni mpya kuliko last_seen
     class_names = list({c.current_class for c in children if c.current_class})
     if class_names:
         recent_announcements = frappe.get_all(
             "Announcement",
-            filters={"class": ["in", class_names], "date": [">=", add_days(nowdate(), -7)]},
-            fields=["tittle", "class"]
+            filters={"class": ["in", class_names], "date": [">=", add_days(nowdate(), -30)]},
+            fields=["name", "tittle", "class", "creation"],
+            order_by="creation desc"
         )
         for a in recent_announcements:
             notifications.append({
@@ -58,9 +65,16 @@ def get_notifications(children):
                 "message": f"Tangazo jipya: {a.tittle}",
                 "link": "/parent-portal/announcements"
             })
+            if not last_seen or get_datetime(a.creation) > last_seen:
+                unseen_count += 1
 
-    return notifications
+    return {"items": notifications, "unseen_count": unseen_count}
 
 
-def get_notification_count(children):
-    return len(get_notifications(children))
+@frappe.whitelist()
+def mark_announcements_seen():
+    guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
+    if guardian_name:
+        frappe.db.set_value("Guardian", guardian_name, "last_announcement_seen", now_datetime())
+        frappe.db.commit()
+    return {"success": True}

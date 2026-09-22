@@ -10,7 +10,8 @@
   "full_name",
   "phone",
   "email",
-  "students"
+  "students",
+  "last_announcement_seen"
  ],
  "fields": [
   {
@@ -42,12 +43,18 @@
    "label": "User",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "last_announcement_seen",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Last Announcement Seen"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-21 11:47:10.679897",
+ "modified": "2026-09-22 09:01:13.736577",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Guardian",
