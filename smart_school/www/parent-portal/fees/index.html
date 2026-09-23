@@ -26,18 +26,23 @@ body { background: var(--sp-bg); }
 .sp-balance-card .label { font-size: 14px; opacity: 0.85; }
 .sp-balance-card .amount { font-size: 32px; font-weight: 800; color: var(--sp-accent); }
 
+.sp-section-title { font-size: 15px; font-weight: 700; color: var(--sp-text); margin: 20px 0 12px; }
+
+.sp-summary-row { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.sp-summary-row .term-name { font-weight: 700; color: var(--sp-primary); min-width: 90px; }
+.sp-summary-row .amounts { font-size: 13px; color: #666; }
+.sp-summary-row .amounts b { color: var(--sp-text); }
+.sp-summary-status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.sp-summary-status.paid { background: #d4edda; color: #155724; }
+.sp-summary-status.owing { background: #f8d7da; color: #721c24; }
+
 .sp-table-wrap { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow-x: auto; }
 table.sp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 table.sp-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #eee; color: #777; font-size: 12px; text-transform: uppercase; }
 table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
 
-.sp-status { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-.sp-status.paid { background: #d4edda; color: #155724; }
-.sp-status.unpaid { background: #f8d7da; color: #721c24; }
-.sp-status.partial { background: #ffe5b4; color: #8a5300; }
-
 .sp-empty { color: #888; padding: 30px; text-align: center; background: #fff; border-radius: 12px; }
-.sp-pay-btn { background: var(--sp-accent); color: var(--sp-primary); padding: 5px 14px; border-radius: 16px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.sp-pay-btn { background: var(--sp-accent); color: var(--sp-primary); padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
 .sp-pay-btn:hover { opacity: 0.85; }
 
 .sp-bell-wrap { position: relative; margin-left: 22px; }
@@ -104,16 +109,39 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
 
     <div class="sp-balance-card">
         <div>
-            <div class="label">Balance iliyobaki - {{ selected_student.full_name }}</div>
+            <div class="label">Jumla ya Deni Lililobaki - {{ selected_student.full_name }}</div>
             <div class="amount">{{ "{:,.0f}".format(current_balance) }} TZS</div>
         </div>
     </div>
 
+    <div class="sp-section-title">Muhtasari kwa Term</div>
+    {% if summary_list %}
+        {% for s in summary_list %}
+        <div class="sp-summary-row">
+            <div class="term-name">{{ s.term_name }}</div>
+            <div class="amounts">
+                Deni: <b>{{ "{:,.0f}".format(s.amount_due) }}</b> &middot;
+                Amelipa: <b>{{ "{:,.0f}".format(s.total_paid) }}</b>
+                {% if s.overpaid %} &middot; Ziada: <b>{{ "{:,.0f}".format(s.overpaid) }}</b>{% endif %}
+            </div>
+            {% if s.remaining > 0 %}
+                <span class="sp-summary-status owing">Anadaiwa {{ "{:,.0f}".format(s.remaining) }}</span>
+                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ s.term }}&amount={{ s.remaining }}">Lipa Ada</a>
+            {% else %}
+                <span class="sp-summary-status paid">Imelipwa Kikamilifu</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="sp-empty">Hakuna taarifa za ada bado kwa {{ selected_student.full_name }}.</div>
+    {% endif %}
+
+    <div class="sp-section-title">Historia ya Malipo</div>
     {% if payments %}
     <div class="sp-table-wrap">
         <table class="sp-table">
             <tr>
-                <th>Term</th><th>Tarehe</th><th>Kiasi</th><th>Njia</th><th>Risiti</th><th>Status</th><th></th>
+                <th>Term</th><th>Tarehe</th><th>Kiasi</th><th>Njia</th><th>Risiti</th>
             </tr>
             {% for p in payments %}
             <tr>
@@ -122,18 +150,12 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
                 <td>{{ "{:,.0f}".format(p.amount_paid) }}</td>
                 <td>{{ p.payment_method or "-" }}</td>
                 <td>{{ p.receipt_number or "-" }}</td>
-                <td><span class="sp-status {{ p.status|lower }}">{{ p.status }}</span></td>
-                <td>
-                    {% if p.balance and p.balance > 0 %}
-                    <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ p.term }}&amount={{ p.balance }}">Lipa Ada</a>
-                    {% endif %}
-                </td>
             </tr>
             {% endfor %}
         </table>
     </div>
     {% else %}
-        <div class="sp-empty">Hakuna malipo yaliyorekodiwa kwa {{ selected_student.full_name }} bado.</div>
+        <div class="sp-empty">Hakuna malipo yaliyorekodiwa bado.</div>
     {% endif %}
 </div>
 

@@ -23,6 +23,10 @@ body { background: var(--sp-bg); }
 .sp-child-tab.active { background: var(--sp-primary); color: #fff; border-color: var(--sp-primary); }
 
 .sp-chart-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.sp-insight-card { border-radius: 12px; padding: 18px 22px; margin-bottom: 20px; font-size: 14px; display: flex; align-items: center; gap: 12px; }
+.sp-insight-card.up { background: #d4edda; color: #155724; }
+.sp-insight-card.down { background: #f8d7da; color: #721c24; }
+.sp-insight-icon { font-size: 22px; }
 
 .sp-term-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 .sp-term-card h4 { color: var(--sp-primary); margin-bottom: 10px; }
@@ -99,6 +103,13 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     </div>
 
     {% if results %}
+    {% if insight %}
+    <div class="sp-insight-card {% if insight.change_percentage > 0 %}up{% else %}down{% endif %}">
+        <span class="sp-insight-icon">{% if insight.change_percentage > 0 %}📈{% else %}📉{% endif %}</span>
+        <span>{{ insight.message }}</span>
+    </div>
+    {% endif %}
+
     <div class="sp-chart-card">
         <canvas id="performanceChart" height="90"></canvas>
     </div>

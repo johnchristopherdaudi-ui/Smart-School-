@@ -23,34 +23,71 @@ def get_children(guardian):
     return children
 
 
+def get_performance_insight(class_name):
+    """Pata Performance Insight ya karibuni zaidi kwa class hii."""
+    if not class_name:
+        return None
+
+    insight = frappe.get_all(
+        "Performance Insight",
+        filters={"class": class_name},
+        fields=["message", "change_percentage", "date_generated"],
+        order_by="date_generated desc",
+        limit=1
+    )
+    return insight[0] if insight else None
+
+
+def get_remaining_balances(children):
+    """Hesabu deni la KWELI la sasa kwa kila (student, term) kwa kujumlisha
+    malipo yote na kulinganisha na Fee Structure - si kutegemea record moja."""
+    results = []
+    for student in children:
+        payments = frappe.get_all(
+            "Fee Payment",
+            filters={"student": student.name},
+            fields=["term", "amount_paid"]
+        )
+        totals = {}
+        for p in payments:
+            totals[p.term] = totals.get(p.term, 0) + (p.amount_paid or 0)
+
+        for term, total_paid in totals.items():
+            fee_structure = frappe.get_all(
+                "Fee Structure",
+                filters={"class": student.current_class, "term": term},
+                fields=["amount"]
+            )
+            amount_due = fee_structure[0].amount if fee_structure else 0
+            remaining = max(amount_due - total_paid, 0)
+            if remaining > 0:
+                results.append({
+                    "student": student.name,
+                    "student_name": student.full_name,
+                    "term": term,
+                    "remaining": remaining
+                })
+    return results
+
+
 def get_notifications(guardian, children):
-    """Rudisha list ya notifications zote (kwa dropdown) + idadi ya 'unseen' (kwa badge)."""
     notifications = []
     unseen_count = 0
 
     if not children:
         return {"items": notifications, "unseen_count": 0}
 
-    student_names = [c.name for c in children]
-    student_map = {c.name: c.full_name for c in children}
     last_seen = get_datetime(guardian.last_announcement_seen) if guardian.last_announcement_seen else None
 
-    # Fee debts - daima zinahesabika kwenye badge mpaka zilipwe
-    unpaid = frappe.get_all(
-        "Fee Payment",
-        filters={"student": ["in", student_names], "balance": [">", 0]},
-        fields=["student", "term", "balance"]
-    )
-    for u in unpaid:
-        term_name = frappe.get_cached_value("Term", u.term, "term_name") or u.term
+    for u in get_remaining_balances(children):
+        term_name = frappe.get_cached_value("Term", u["term"], "term_name") or u["term"]
         notifications.append({
             "type": "fee",
-            "message": f"{student_map.get(u.student, u.student)}: Deni la {u.balance:,.0f} TZS ({term_name})",
-            "link": f"/parent-portal/fees?student={u.student}"
+            "message": f"{u['student_name']}: Deni la {u['remaining']:,.0f} TZS ({term_name})",
+            "link": f"/parent-portal/fees?student={u['student']}"
         })
-        unseen_count += 1  # fee daima ni "unseen" mpaka ilipwe
+        unseen_count += 1
 
-    # Announcements - zinahesabika kwenye badge tu kama ni mpya kuliko last_seen
     class_names = list({c.current_class for c in children if c.current_class})
     if class_names:
         recent_announcements = frappe.get_all(
@@ -120,7 +157,7 @@ def confirm_demo_payment(reference, term, success):
         fee_payment.term = term
         fee_payment.amount_paid = log.amount
         fee_payment.payment_date = frappe.utils.today()
-        fee_payment.payment_method = log.provider
+        fee_payment.payment_method = "Mobile Money"
         fee_payment.insert(ignore_permissions=True)
 
         log.fee_payment = fee_payment.name
