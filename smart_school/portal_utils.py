@@ -117,8 +117,31 @@ def mark_announcements_seen():
     return {"success": True}
 
 
+def get_remaining_balance(student, term):
+    """Deni la KWELI la sasa kwa (student, term), hesabiwa server-side - si kutegemea input ya mteja."""
+    current_class = frappe.get_value("Student", student, "current_class")
+
+    total_paid = sum(
+        p or 0
+        for p in frappe.get_all(
+            "Fee Payment",
+            filters={"student": student, "term": term},
+            pluck="amount_paid"
+        )
+    )
+
+    fee_structure = frappe.get_all(
+        "Fee Structure",
+        filters={"class": current_class, "term": term},
+        fields=["amount"]
+    )
+    amount_due = fee_structure[0].amount if fee_structure else 0
+
+    return max(amount_due - total_paid, 0)
+
+
 @frappe.whitelist()
-def create_payment_request(student, term, amount, provider, phone_number):
+def create_payment_request(student, term, provider, phone_number):
     guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
     if not guardian_name:
         frappe.throw("No guardian profile linked to this account")
@@ -128,9 +151,13 @@ def create_payment_request(student, term, amount, provider, phone_number):
     if student not in allowed_students:
         frappe.throw("Huna ruhusa ya kulipia mwanafunzi huyu")
 
+    remaining = get_remaining_balance(student, term)
+    if remaining <= 0:
+        frappe.throw("Hakuna deni lililobaki kwa muhula huu")
+
     log = frappe.new_doc("Payment Gateway Log")
     log.student = student
-    log.amount = amount
+    log.amount = remaining
     log.phone_number = phone_number
     log.provider = provider
     log.status = "Pending"
@@ -143,7 +170,19 @@ def create_payment_request(student, term, amount, provider, phone_number):
 
 @frappe.whitelist()
 def confirm_demo_payment(reference, term, success):
+    guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
+    if not guardian_name:
+        frappe.throw("No guardian profile linked to this account", frappe.PermissionError)
+
     log = frappe.get_doc("Payment Gateway Log", {"transaction_reference": reference})
+
+    guardian = frappe.get_doc("Guardian", guardian_name)
+    allowed_students = [row.student for row in guardian.students]
+    if log.student not in allowed_students:
+        frappe.throw("Huna ruhusa ya kufikia malipo haya", frappe.PermissionError)
+
+    if log.status != "Pending":
+        frappe.throw("Muamala huu tayari umeshakamilika")
 
     success = frappe.utils.cint(success)
 

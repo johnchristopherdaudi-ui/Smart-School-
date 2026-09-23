@@ -6,6 +6,13 @@ def get_current_teacher():
     return teacher
 
 
+def require_current_teacher():
+    teacher = get_current_teacher()
+    if not teacher:
+        frappe.throw("Only teachers can perform this action", frappe.PermissionError)
+    return teacher
+
+
 @frappe.whitelist()
 def bulk_create_exam_results(exam, subject, entries):
     import json
@@ -13,7 +20,7 @@ def bulk_create_exam_results(exam, subject, entries):
     if isinstance(entries, str):
         entries = json.loads(entries)
 
-    teacher = get_current_teacher()
+    teacher = require_current_teacher()
 
     created = 0
     skipped = 0
@@ -52,7 +59,7 @@ def import_marks_from_csv(file_url, exam, subject):
     import csv
 
     class_name = frappe.get_value("Exam", exam, "class")
-    teacher = get_current_teacher()
+    teacher = require_current_teacher()
 
     file_doc = frappe.get_all("File", filters={"file_url": file_url}, fields=["name"])
 
@@ -131,7 +138,7 @@ def import_marks_from_csv(file_url, exam, subject):
 
 @frappe.whitelist()
 def import_wide_format_csv(file_url, exam, class_name):
-    teacher = get_current_teacher()
+    teacher = require_current_teacher()
 
     file_doc = frappe.get_all("File", filters={"file_url": file_url}, fields=["name"])
 

@@ -126,7 +126,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
             </div>
             {% if s.remaining > 0 %}
                 <span class="sp-summary-status owing">Anadaiwa {{ "{:,.0f}".format(s.remaining) }}</span>
-                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ s.term }}&amount={{ s.remaining }}">Lipa Ada</a>
+                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ s.term }}">Lipa Ada</a>
             {% else %}
                 <span class="sp-summary-status paid">Imelipwa Kikamilifu</span>
             {% endif %}
