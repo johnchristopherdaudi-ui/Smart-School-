@@ -79,12 +79,12 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count }}</span>
+            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
                     {% for n in notifications %}
-                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
                     {% endfor %}
                 {% else %}
                     <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -101,15 +101,15 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     <div class="sp-child-tabs">
         {% for child in children %}
         <a class="sp-child-tab {% if child.name == selected_student.name %}active{% endif %}"
-           href="/parent-portal/fees?student={{ child.name }}">
-            {{ child.full_name }}
+           href="/parent-portal/fees?student={{ child.name | urlencode }}">
+            {{ child.full_name | e }}
         </a>
         {% endfor %}
     </div>
 
     <div class="sp-balance-card">
         <div>
-            <div class="label">Jumla ya Deni Lililobaki - {{ selected_student.full_name }}</div>
+            <div class="label">Jumla ya Deni Lililobaki - {{ selected_student.full_name | e }}</div>
             <div class="amount">{{ "{:,.0f}".format(current_balance) }} TZS</div>
         </div>
     </div>
@@ -118,7 +118,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     {% if summary_list %}
         {% for s in summary_list %}
         <div class="sp-summary-row">
-            <div class="term-name">{{ s.term_name }}</div>
+            <div class="term-name">{{ s.term_name | e }}</div>
             <div class="amounts">
                 Deni: <b>{{ "{:,.0f}".format(s.amount_due) }}</b> &middot;
                 Amelipa: <b>{{ "{:,.0f}".format(s.total_paid) }}</b>
@@ -126,14 +126,36 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
             </div>
             {% if s.remaining > 0 %}
                 <span class="sp-summary-status owing">Anadaiwa {{ "{:,.0f}".format(s.remaining) }}</span>
-                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name }}&term={{ s.term }}">Lipa Ada</a>
+                {% if payments_enabled %}
+                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name | urlencode }}&amp;term={{ s.term | urlencode }}">Lipa Ada</a>
+                {% endif %}
             {% else %}
                 <span class="sp-summary-status paid">Imelipwa Kikamilifu</span>
             {% endif %}
         </div>
         {% endfor %}
     {% else %}
-        <div class="sp-empty">Hakuna taarifa za ada bado kwa {{ selected_student.full_name }}.</div>
+        <div class="sp-empty">Hakuna taarifa za ada bado kwa {{ selected_student.full_name | e }}.</div>
+    {% endif %}
+
+    {% if upcoming_list %}
+    <div class="sp-section-title">Terms Zijazo (Unaweza Kulipa Mapema)</div>
+        {% for s in upcoming_list %}
+        <div class="sp-summary-row">
+            <div class="term-name">{{ s.term_name | e }}</div>
+            <div class="amounts">
+                Ada: <b>{{ "{:,.0f}".format(s.amount_due) }}</b> &middot;
+                Amelipa: <b>{{ "{:,.0f}".format(s.total_paid) }}</b>
+            </div>
+            {% if s.remaining > 0 %}
+                {% if payments_enabled %}
+                <a class="sp-pay-btn" href="/parent-portal/pay?student={{ selected_student.name | urlencode }}&amp;term={{ s.term | urlencode }}">Lipa Mapema</a>
+                {% endif %}
+            {% else %}
+                <span class="sp-summary-status paid">Imelipwa Kikamilifu</span>
+            {% endif %}
+        </div>
+        {% endfor %}
     {% endif %}
 
     <div class="sp-section-title">Historia ya Malipo</div>
@@ -145,11 +167,11 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
             </tr>
             {% for p in payments %}
             <tr>
-                <td>{{ p.term_name }}</td>
-                <td>{{ p.payment_date }}</td>
+                <td>{{ p.term_name | e }}</td>
+                <td>{{ p.payment_date | e }}</td>
                 <td>{{ "{:,.0f}".format(p.amount_paid) }}</td>
-                <td>{{ p.payment_method or "-" }}</td>
-                <td>{{ p.receipt_number or "-" }}</td>
+                <td>{{ (p.payment_method or "-") | e }}</td>
+                <td>{{ (p.receipt_number or "-") | e }}</td>
             </tr>
             {% endfor %}
         </table>

@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils.html_utils import sanitize_html
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
 
 def get_context(context):
@@ -42,6 +43,8 @@ def get_context(context):
                 for c in doc_classes:
                     relevant_students.extend(class_map.get(c, []))
 
+                # message is a Text Editor field: keep its formatting, strip anything unsafe
+                a["message"] = sanitize_html(a.message or "", always_sanitize=True)
                 a["class_list"] = ", ".join(doc_classes)
                 a["for_students"] = ", ".join(set(relevant_students))
                 announcements.append(a)

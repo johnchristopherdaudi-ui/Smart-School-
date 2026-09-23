@@ -67,12 +67,12 @@ body { background: var(--sp-bg); }
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count }}</span>
+            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
                     {% for n in notifications %}
-                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
                     {% endfor %}
                 {% else %}
                     <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -89,8 +89,8 @@ body { background: var(--sp-bg); }
     <div class="sp-child-tabs">
         {% for child in children %}
         <a class="sp-child-tab {% if child.name == selected_student.name %}active{% endif %}"
-           href="/parent-portal/discipline?student={{ child.name }}">
-            {{ child.full_name }}
+           href="/parent-portal/discipline?student={{ child.name | urlencode }}">
+            {{ child.full_name | e }}
         </a>
         {% endfor %}
     </div>
@@ -98,18 +98,18 @@ body { background: var(--sp-bg); }
     {% if records %}
         {% for r in records %}
         <div class="sp-record-card">
-            <div class="sp-record-date">{{ r.date }}</div>
+            <div class="sp-record-date">{{ r.date | e }}</div>
             <div class="sp-record-type">
-                {{ r.incident_type }}
-                <span class="sp-severity {{ r.severity|lower }}">{{ r.severity }}</span>
+                {{ r.incident_type | e }}
+                <span class="sp-severity {{ (r.severity or "") | lower | e }}">{{ r.severity | e }}</span>
             </div>
             {% if r.action_taken %}
-            <div class="sp-action">Hatua iliyochukuliwa: {{ r.action_taken }}</div>
+            <div class="sp-action">Hatua iliyochukuliwa: {{ r.action_taken | e }}</div>
             {% endif %}
         </div>
         {% endfor %}
     {% else %}
-        <div class="sp-empty">Hakuna rekodi za nidhamu kwa {{ selected_student.full_name }}. 🎉</div>
+        <div class="sp-empty">Hakuna rekodi za nidhamu kwa {{ selected_student.full_name | e }}. 🎉</div>
     {% endif %}
 </div>
 

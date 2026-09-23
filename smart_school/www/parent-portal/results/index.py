@@ -35,8 +35,8 @@ def get_context(context):
     context.children = children
     context.selected_student = selected_student
     context.results = results
-    context.chart_labels = frappe.as_json(chart_labels)
-    context.chart_values = frappe.as_json(chart_values)
+    context.chart_labels = chart_labels
+    context.chart_values = chart_values
     context.insight = insight
     notif_data = get_notifications(guardian, children)
     context.notifications = notif_data["items"]

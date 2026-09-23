@@ -1,8 +1,14 @@
 import mimetypes
+import re
 from urllib.parse import urlencode
 
 import frappe
-from frappe.utils import add_days, nowdate, now_datetime, get_datetime
+from frappe.utils import add_days, flt, nowdate, now_datetime, get_datetime
+
+from smart_school.an_intergrated_academic_management_system.doctype.smart_school_settings.smart_school_settings import (
+    demo_payments_enabled,
+)
+from smart_school.fees import get_fee_statement, get_term_outstanding
 
 
 def get_logged_in_guardian():
@@ -72,38 +78,6 @@ def get_performance_insight(class_name):
     return insight[0] if insight else None
 
 
-def get_remaining_balances(children):
-    """Hesabu deni la KWELI la sasa kwa kila (student, term) kwa kujumlisha
-    malipo yote na kulinganisha na Fee Structure - si kutegemea record moja."""
-    results = []
-    for student in children:
-        payments = frappe.get_all(
-            "Fee Payment",
-            filters={"student": student.name},
-            fields=["term", "amount_paid"]
-        )
-        totals = {}
-        for p in payments:
-            totals[p.term] = totals.get(p.term, 0) + (p.amount_paid or 0)
-
-        for term, total_paid in totals.items():
-            fee_structure = frappe.get_all(
-                "Fee Structure",
-                filters={"class": student.current_class, "term": term},
-                fields=["amount"]
-            )
-            amount_due = fee_structure[0].amount if fee_structure else 0
-            remaining = max(amount_due - total_paid, 0)
-            if remaining > 0:
-                results.append({
-                    "student": student.name,
-                    "student_name": student.full_name,
-                    "term": term,
-                    "remaining": remaining
-                })
-    return results
-
-
 def get_notifications(guardian, children):
     notifications = []
     unseen_count = 0
@@ -113,14 +87,16 @@ def get_notifications(guardian, children):
 
     last_seen = get_datetime(guardian.last_announcement_seen) if guardian.last_announcement_seen else None
 
-    for u in get_remaining_balances(children):
-        term_name = frappe.get_cached_value("Term", u["term"], "term_name") or u["term"]
-        notifications.append({
-            "type": "fee",
-            "message": f"{u['student_name']}: Deni la {u['remaining']:,.0f} TZS ({term_name})",
-            "link": f"/parent-portal/fees?student={u['student']}"
-        })
-        unseen_count += 1
+    for child in children:
+        statement = get_fee_statement(child.name)
+        for row in statement.rows:
+            if row.is_due and row.remaining > 0:
+                notifications.append({
+                    "type": "fee",
+                    "message": f"{statement.student_name}: Deni la {row.remaining:,.0f} TZS ({row.term_name})",
+                    "link": "/parent-portal/fees?" + urlencode({"student": child.name})
+                })
+                unseen_count += 1
 
     class_names = list({c.current_class for c in children if c.current_class})
     if class_names:
@@ -151,31 +127,30 @@ def mark_announcements_seen():
     return {"success": True}
 
 
-def get_remaining_balance(student, term):
-    """Deni la KWELI la sasa kwa (student, term), hesabiwa server-side - si kutegemea input ya mteja."""
-    current_class = frappe.get_value("Student", student, "current_class")
+def get_payment_providers():
+    """Provider options come from the doctype, so the portal dropdown cannot drift from it."""
+    return frappe.get_meta("Payment Gateway Log").get_field("provider").options.split("\n")
 
-    total_paid = sum(
-        p or 0
-        for p in frappe.get_all(
-            "Fee Payment",
-            filters={"student": student, "term": term},
-            pluck="amount_paid"
-        )
-    )
 
-    fee_structure = frappe.get_all(
-        "Fee Structure",
-        filters={"class": current_class, "term": term},
-        fields=["amount"]
-    )
-    amount_due = fee_structure[0].amount if fee_structure else 0
+def normalize_tz_mobile(phone):
+    """Return the number as 2556XXXXXXXX / 2557XXXXXXXX, or None if it is not a Tanzanian mobile number."""
+    digits = re.sub(r"\D", "", phone or "")
+    if len(digits) == 10 and digits.startswith("0"):
+        digits = "255" + digits[1:]
+    elif len(digits) == 9:
+        digits = "255" + digits
+    return digits if re.fullmatch(r"255[67]\d{8}", digits) else None
 
-    return max(amount_due - total_paid, 0)
+
+def assert_demo_payments_enabled():
+    if not demo_payments_enabled():
+        frappe.throw("Malipo kwa simu hayajawezeshwa kwa sasa. Wasiliana na shule.", frappe.PermissionError)
 
 
 @frappe.whitelist()
-def create_payment_request(student, term, provider, phone_number):
+def create_payment_request(student, term, provider, phone_number, amount=None):
+    assert_demo_payments_enabled()
+
     guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
     if not guardian_name:
         frappe.throw("No guardian profile linked to this account")
@@ -185,30 +160,53 @@ def create_payment_request(student, term, provider, phone_number):
     if student not in allowed_students:
         frappe.throw("Huna ruhusa ya kulipia mwanafunzi huyu")
 
-    remaining = get_remaining_balance(student, term)
+    if not term or not frappe.db.exists("Term", term):
+        frappe.throw("Muhula (term) haupo")
+
+    if provider not in get_payment_providers():
+        frappe.throw("Mtoa huduma wa malipo si sahihi")
+
+    phone = normalize_tz_mobile(phone_number)
+    if not phone:
+        frappe.throw("Namba ya simu si sahihi. Tumia mfano 07XXXXXXXX au 2557XXXXXXXX")
+
+    remaining = get_term_outstanding(student, term)
     if remaining <= 0:
         frappe.throw("Hakuna deni lililobaki kwa muhula huu")
 
+    # Whole shillings: Fee Payment.amount_paid is an Int field
+    amount = flt(amount, 0) if amount not in (None, "") else remaining
+    if not 0 < amount <= remaining:
+        frappe.throw(f"Kiasi lazima kiwe zaidi ya 0 na kisizidi deni la {remaining:,.0f} TZS")
+
     log = frappe.new_doc("Payment Gateway Log")
     log.student = student
-    log.amount = remaining
-    log.phone_number = phone_number
+    log.term = term
+    log.amount = amount
+    log.phone_number = phone
     log.provider = provider
     log.status = "Pending"
     log.transaction_reference = frappe.generate_hash(length=10).upper()
     log.insert(ignore_permissions=True)
     frappe.db.commit()
 
-    return {"reference": log.transaction_reference, "term": term}
+    return {"reference": log.transaction_reference}
 
 
 @frappe.whitelist()
-def confirm_demo_payment(reference, term, success):
+def confirm_demo_payment(reference, success):
+    assert_demo_payments_enabled()
+
     guardian_name = frappe.db.get_value("Guardian", {"user": frappe.session.user}, "name")
     if not guardian_name:
         frappe.throw("No guardian profile linked to this account", frappe.PermissionError)
 
-    log = frappe.get_doc("Payment Gateway Log", {"transaction_reference": reference})
+    log_name = frappe.db.get_value("Payment Gateway Log", {"transaction_reference": reference}, "name")
+    if not log_name:
+        frappe.throw("Muamala haupo", frappe.DoesNotExistError)
+
+    # Lock the row so a double click or refresh cannot confirm the same request twice
+    log = frappe.get_doc("Payment Gateway Log", log_name, for_update=True)
 
     guardian = frappe.get_doc("Guardian", guardian_name)
     allowed_students = [row.student for row in guardian.students]
@@ -220,6 +218,11 @@ def confirm_demo_payment(reference, term, success):
 
     success = frappe.utils.cint(success)
 
+    # Another request may have paid this term since this one was created
+    if success and log.amount > get_term_outstanding(log.student, log.term):
+        success = 0
+        log.response_message = "Kiasi kinazidi deni lililobaki kwa muhula huu"
+
     if success:
         log.status = "Success"
         log.response_message = "Demo payment completed successfully"
@@ -227,10 +230,11 @@ def confirm_demo_payment(reference, term, success):
 
         fee_payment = frappe.new_doc("Fee Payment")
         fee_payment.student = log.student
-        fee_payment.term = term
+        fee_payment.term = log.term
         fee_payment.amount_paid = log.amount
         fee_payment.payment_date = frappe.utils.today()
         fee_payment.payment_method = "Mobile Money"
+        fee_payment.receipt_number = log.transaction_reference
         fee_payment.insert(ignore_permissions=True)
 
         log.fee_payment = fee_payment.name
@@ -240,7 +244,7 @@ def confirm_demo_payment(reference, term, success):
         return {"success": True, "fee_payment": fee_payment.name}
     else:
         log.status = "Failed"
-        log.response_message = "Demo payment failed"
+        log.response_message = log.response_message or "Demo payment failed"
         log.save(ignore_permissions=True)
         frappe.db.commit()
-        return {"success": False}
+        return {"success": False, "message": log.response_message}

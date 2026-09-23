@@ -1,4 +1,8 @@
 import frappe
+from smart_school.an_intergrated_academic_management_system.doctype.smart_school_settings.smart_school_settings import (
+    demo_payments_enabled,
+)
+from smart_school.fees import get_fee_statement
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
 
 def get_context(context):
@@ -18,37 +22,19 @@ def get_context(context):
         order_by="payment_date desc, creation desc"
     )
     for p in payments:
-        term_doc = frappe.get_cached_doc("Term", p.term)
-        p.term_name = term_doc.term_name
+        p.term_name = frappe.get_cached_value("Term", p.term, "term_name")
 
-    # Muhtasari LIVE kwa kila term (hii ndiyo chanzo cha ukweli, si record moja)
-    term_summary = {}
-    for p in payments:
-        if p.term not in term_summary:
-            term_summary[p.term] = {"term_name": p.term_name, "total_paid": 0}
-        term_summary[p.term]["total_paid"] += p.amount_paid or 0
-
-    for term, info in term_summary.items():
-        fee_structure = frappe.get_all(
-            "Fee Structure",
-            filters={"class": selected_student.current_class, "term": term},
-            fields=["amount"]
-        )
-        amount_due = fee_structure[0].amount if fee_structure else 0
-        info["amount_due"] = amount_due
-        info["remaining"] = max(amount_due - info["total_paid"], 0)
-        info["overpaid"] = max(info["total_paid"] - amount_due, 0) if amount_due else 0
-
-    summary_list = [{"term": t, **info} for t, info in term_summary.items()]
-
-    current_balance = sum(s["remaining"] for s in summary_list)
+    # Muhtasari kwa kila term kutoka get_fee_statement (chanzo kimoja cha ukweli)
+    statement = get_fee_statement(selected_student.name)
 
     context.guardian = guardian
     context.children = children
     context.selected_student = selected_student
     context.payments = payments
-    context.summary_list = summary_list
-    context.current_balance = current_balance
+    context.summary_list = [r for r in statement.rows if r.is_due]
+    context.upcoming_list = [r for r in statement.rows if not r.is_due]
+    context.current_balance = statement.balance
+    context.payments_enabled = demo_payments_enabled()
     notif_data = get_notifications(guardian, children)
     context.notifications = notif_data["items"]
     context.unseen_count = notif_data["unseen_count"]

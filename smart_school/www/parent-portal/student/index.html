@@ -64,12 +64,12 @@ body { background: var(--sp-bg); }
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count }}</span>
+            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
                     {% for n in notifications %}
-                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
                     {% endfor %}
                 {% else %}
                     <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -85,36 +85,36 @@ body { background: var(--sp-bg); }
         {% if selected_student.photo_url %}
             <img class="sp-avatar-lg" src="{{ selected_student.photo_url | e }}" alt="{{ selected_student.full_name | e }}">
         {% else %}
-            <div class="sp-avatar-lg-fallback">{{ selected_student.initials }}</div>
+            <div class="sp-avatar-lg-fallback">{{ selected_student.initials | e }}</div>
         {% endif %}
         <div>
-            <h2>{{ selected_student.full_name }}</h2>
-            <p>Class: {{ selected_student.current_class or "-" }}</p>
-            <p>Status: {{ selected_student.status or "Active" }}</p>
+            <h2>{{ selected_student.full_name | e }}</h2>
+            <p>Class: {{ (selected_student.current_class or "-") | e }}</p>
+            <p>Status: {{ (selected_student.status or "Active") | e }}</p>
         </div>
     </div>
 
     <div class="sp-summary-grid">
-        <a class="sp-summary-card" href="/parent-portal/results?student={{ selected_student.name }}">
+        <a class="sp-summary-card" href="/parent-portal/results?student={{ selected_student.name | urlencode }}">
             <div class="label">Matokeo ya Karibuni</div>
             {% if latest_result %}
-                <div class="value">{{ latest_result.average }}</div>
-                <div class="sub">{{ latest_result.term_name }} &middot; {{ latest_result.division_display or latest_result.division }}</div>
+                <div class="value">{{ latest_result.average | e }}</div>
+                <div class="sub">{{ latest_result.term_name | e }} &middot; {{ (latest_result.division_display or latest_result.division) | e }}</div>
             {% else %}
                 <div class="value">-</div>
                 <div class="sub">Hakuna matokeo bado</div>
             {% endif %}
         </a>
 
-        <a class="sp-summary-card" href="/parent-portal/fees?student={{ selected_student.name }}">
+        <a class="sp-summary-card" href="/parent-portal/fees?student={{ selected_student.name | urlencode }}">
             <div class="label">Balance ya Ada</div>
             <div class="value">{{ "{:,.0f}".format(current_balance) }}</div>
             <div class="sub">TZS iliyobaki</div>
         </a>
 
-        <a class="sp-summary-card" href="/parent-portal/discipline?student={{ selected_student.name }}">
+        <a class="sp-summary-card" href="/parent-portal/discipline?student={{ selected_student.name | urlencode }}">
             <div class="label">Rekodi za Nidhamu</div>
-            <div class="value">{{ discipline_count }}</div>
+            <div class="value">{{ discipline_count | e }}</div>
             <div class="sub">jumla ya matukio</div>
         </a>
     </div>

@@ -71,12 +71,12 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 <span class="sp-bell-wrap">
     <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
     {% if unseen_count and unseen_count > 0 %}
-    <span class="sp-bell-badge">{{ unseen_count }}</span>
+    <span class="sp-bell-badge">{{ unseen_count | e }}</span>
     {% endif %}
     <div class="sp-notif-dropdown" id="notifDropdown">
         {% if notifications %}
             {% for n in notifications %}
-            <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+            <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
             {% endfor %}
         {% else %}
             <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -88,7 +88,7 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 </nav>
 
 <div class="sp-container">
-<div class="sp-welcome">Karibu, {{ guardian.full_name }} 👋</div>
+<div class="sp-welcome">Karibu, {{ guardian.full_name | e }} 👋</div>
 
 <div class="row">
         {% for student in children %}
@@ -97,13 +97,13 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
                 {% if student.photo_url %}
 <img class="sp-avatar" src="{{ student.photo_url | e }}" alt="{{ student.full_name | e }}">
                 {% else %}
-<div class="sp-avatar-fallback">{{ student.initials }}</div>
+<div class="sp-avatar-fallback">{{ student.initials | e }}</div>
                 {% endif %}
 <div class="sp-card-body">
-<h4>{{ student.full_name }}</h4>
-<p>Class: {{ student.current_class or "-" }}</p>
-<p><span class="sp-badge">{{ student.status or "Active" }}</span></p>
-<a class="sp-link" href="/parent-portal/student?student={{ student.name }}">Ona Zaidi &rarr;</a>
+<h4>{{ student.full_name | e }}</h4>
+<p>Class: {{ (student.current_class or "-") | e }}</p>
+<p><span class="sp-badge">{{ (student.status or "Active") | e }}</span></p>
+<a class="sp-link" href="/parent-portal/student?student={{ student.name | urlencode }}">Ona Zaidi &rarr;</a>
 </div>
 </div>
 </div>

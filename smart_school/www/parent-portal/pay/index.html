@@ -40,18 +40,21 @@ body { background: var(--sp-bg); }
     <div class="sp-pay-card">
         <h3>Lipa Ada</h3>
         <div class="sp-pay-summary">
-            <b>{{ selected_student.full_name }}</b> &middot; {{ term_name }}<br>
-            Kiasi: <b>{{ "{:,.0f}".format(amount|float) }} TZS</b>
+            <b>{{ selected_student.full_name | e }}</b> &middot; {{ term_name | e }}<br>
+            Deni lililobaki: <b>{{ "{:,.0f}".format(amount|float) }} TZS</b>
+        </div>
+
+        <div class="sp-field">
+            <label>Kiasi cha Kulipa (TZS)</label>
+            <input type="number" id="amount" min="1" max="{{ amount|int }}" step="1" value="{{ amount|int }}">
         </div>
 
         <div class="sp-field">
             <label>Chagua Njia ya Malipo</label>
             <select id="provider">
-                <option value="M-Pesa">M-Pesa</option>
-                <option value="Tigo Pesa">Tigo Pesa</option>
-                <option value="Airtel Money">Airtel Money</option>
-                <option value="Halopesa">Halopesa</option>
-                <option value="Azampesa">Azampesa</option>
+                {% for provider in providers %}
+                <option value="{{ provider | e }}">{{ provider | e }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -68,10 +71,15 @@ body { background: var(--sp-bg); }
 function submitPayment() {
     var phone = document.getElementById('phone').value;
     var provider = document.getElementById('provider').value;
+    var amount = document.getElementById('amount').value;
     var btn = document.getElementById('submitBtn');
 
     if (!phone) {
         frappe.msgprint("Tafadhali weka namba ya simu");
+        return;
+    }
+    if (!amount || Number(amount) <= 0) {
+        frappe.msgprint("Tafadhali weka kiasi cha kulipa");
         return;
     }
 
@@ -81,16 +89,19 @@ function submitPayment() {
     frappe.call({
         method: 'smart_school.portal_utils.create_payment_request',
         args: {
-            student: "{{ selected_student.name }}",
-            term: "{{ term }}",
+            student: {{ selected_student.name | tojson }},
+            term: {{ term | tojson }},
+            amount: amount,
             provider: provider,
             phone_number: phone
         },
         callback: function(r) {
             if (r.message && r.message.reference) {
-                window.location.href = "/parent-portal/pay-confirm?ref=" + r.message.reference + "&term=" + r.message.term;
-            } else {
-                frappe.msgprint("Hitilafu imetokea. Jaribu tena.");
+                window.location.href = "/parent-portal/pay-confirm?ref=" + encodeURIComponent(r.message.reference);
+            }
+        },
+        always: function(r) {
+            if (!(r && r.message && r.message.reference)) {
                 btn.disabled = false;
                 btn.innerText = "Endelea na Malipo";
             }

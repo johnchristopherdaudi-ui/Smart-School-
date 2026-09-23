@@ -1,5 +1,6 @@
 import frappe
 from frappe.model.document import Document
+from smart_school.fees import get_class_for_term
 from smart_school.notifications import send_notification
 
 
@@ -12,11 +13,12 @@ class FeePayment(Document):
     def set_amount_due(self):
         self.amount_due = 0  # default kwanza, itabadilishwa chini kama Fee Structure ikipatikana
 
-        student_class = frappe.get_value("Student", self.student, "current_class")
+        if not self.get("class"):
+            self.set("class", get_class_for_term(self.student, self.term))
 
         fee_structure = frappe.get_all(
             "Fee Structure",
-            filters={"class": student_class, "term": self.term},
+            filters={"class": self.get("class"), "term": self.term},
             fields=["amount"]
         )
 

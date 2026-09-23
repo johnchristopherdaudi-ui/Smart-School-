@@ -36,10 +36,11 @@ body { background: var(--sp-bg); }
 
 <div class="sp-container">
     <div class="sp-checkout-card" id="checkoutCard">
-        <div class="sp-provider-badge">{{ log.provider }}</div>
+        <div class="sp-provider-badge">{{ log.provider | e }}</div>
         <div class="sp-amount">{{ "{:,.0f}".format(log.amount) }} TZS</div>
-        <div class="sp-phone">Namba: {{ log.phone_number }}</div>
+        <div class="sp-phone">Namba: {{ log.phone_number | e }}</div>
 
+        {% if log.status == "Pending" %}
         <div class="sp-demo-note">
             Hii ni demo ya malipo. Hakuna pesa halisi itakayotumika. Chagua matokeo ya kuiga.
         </div>
@@ -50,29 +51,43 @@ body { background: var(--sp-bg); }
         </div>
 
         <div class="sp-result" id="resultBox"></div>
+        {% elif log.status == "Success" %}
+        <div class="sp-result show ok">&#9989; Malipo yamefanikiwa!<br><a class="sp-back-link" href="{{ fees_url | e }}">Rudi kwenye Ada &rarr;</a></div>
+        {% else %}
+        <div class="sp-result show bad">&#10060; Malipo hayakufanikiwa. {{ (log.response_message or "") | e }}<br><a class="sp-back-link" href="{{ fees_url | e }}">Rudi kwenye Ada &rarr;</a></div>
+        {% endif %}
     </div>
 </div>
 
 <script>
+var FEES_URL = {{ fees_url | tojson }};
+
+function showResult(ok, message) {
+    var box = document.getElementById('resultBox');
+    box.className = 'sp-result show ' + (ok ? 'ok' : 'bad');
+    box.textContent = (ok ? '\u2705 Malipo yamefanikiwa! ' : '\u274C Malipo hayakufanikiwa. ') + (message || '');
+    var link = document.createElement('a');
+    link.className = 'sp-back-link';
+    link.href = FEES_URL;
+    link.textContent = 'Rudi kwenye Ada \u2192';
+    box.appendChild(document.createElement('br'));
+    box.appendChild(link);
+}
+
 function confirmPayment(success) {
     document.getElementById('btnRow').style.display = 'none';
 
     frappe.call({
         method: 'smart_school.portal_utils.confirm_demo_payment',
         args: {
-            reference: "{{ reference }}",
-            term: "{{ term }}",
+            reference: {{ reference | tojson }},
             success: success
         },
         callback: function(r) {
-            var box = document.getElementById('resultBox');
-            if (r.message && r.message.success) {
-                box.className = 'sp-result show ok';
-                box.innerHTML = '✅ Malipo yamefanikiwa!<br><a class="sp-back-link" href="/parent-portal/fees?student={{ log.student }}">Rudi kwenye Ada &rarr;</a>';
-            } else {
-                box.className = 'sp-result show bad';
-                box.innerHTML = '❌ Malipo hayakufanikiwa.<br><a class="sp-back-link" href="/parent-portal/fees?student={{ log.student }}">Rudi kwenye Ada &rarr;</a>';
-            }
+            showResult(r.message && r.message.success, r.message && r.message.message);
+        },
+        error: function() {
+            showResult(false);
         }
     });
 }

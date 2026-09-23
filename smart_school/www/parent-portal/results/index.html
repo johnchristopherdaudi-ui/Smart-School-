@@ -74,12 +74,12 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count }}</span>
+            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
                     {% for n in notifications %}
-                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
                     {% endfor %}
                 {% else %}
                     <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -96,8 +96,8 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     <div class="sp-child-tabs">
         {% for child in children %}
         <a class="sp-child-tab {% if child.name == selected_student.name %}active{% endif %}"
-           href="/parent-portal/results?student={{ child.name }}">
-            {{ child.full_name }}
+           href="/parent-portal/results?student={{ child.name | urlencode }}">
+            {{ child.full_name | e }}
         </a>
         {% endfor %}
     </div>
@@ -106,7 +106,7 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     {% if insight %}
     <div class="sp-insight-card {% if insight.change_percentage > 0 %}up{% else %}down{% endif %}">
         <span class="sp-insight-icon">{% if insight.change_percentage > 0 %}📈{% else %}📉{% endif %}</span>
-        <span>{{ insight.message }}</span>
+        <span>{{ insight.message | e }}</span>
     </div>
     {% endif %}
 
@@ -118,24 +118,24 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     {% if results %}
         {% for r in results %}
         <div class="sp-term-card">
-            <h4>{{ r.term_name }}</h4>
+            <h4>{{ r.term_name | e }}</h4>
             <div class="sp-term-stats">
-                <div class="sp-stat"><b>{{ r.average }}</b>Average</div>
-                <div class="sp-stat"><b>{{ r.division_display or r.division }}</b>Division</div>
-                <div class="sp-stat"><b>{{ r.total_points }}</b>Total Points</div>
+                <div class="sp-stat"><b>{{ r.average | e }}</b>Average</div>
+                <div class="sp-stat"><b>{{ (r.division_display or r.division) | e }}</b>Division</div>
+                <div class="sp-stat"><b>{{ r.total_points | e }}</b>Total Points</div>
             </div>
             {% if r.subjects %}
             <table class="sp-table">
                 <tr><th>Subject</th><th>Marks</th><th>Grade</th></tr>
                 {% for s in r.subjects %}
-                <tr><td>{{ s.subject }}</td><td>{{ s.marks }}</td><td>{{ s.grade }}</td></tr>
+                <tr><td>{{ s.subject | e }}</td><td>{{ s.marks | e }}</td><td>{{ s.grade | e }}</td></tr>
                 {% endfor %}
             </table>
             {% endif %}
         </div>
         {% endfor %}
     {% else %}
-        <div class="sp-empty">Hakuna matokeo yaliyopatikana kwa {{ selected_student.full_name }} bado.</div>
+        <div class="sp-empty">Hakuna matokeo yaliyopatikana kwa {{ selected_student.full_name | e }} bado.</div>
     {% endif %}
 </div>
 
@@ -156,10 +156,10 @@ if (chartCanvas) {
     new Chart(chartCanvas, {
         type: 'line',
         data: {
-            labels: {{ chart_labels }},
+            labels: {{ chart_labels | tojson }},
             datasets: [{
                 label: 'Average',
-                data: {{ chart_values }},
+                data: {{ chart_values | tojson }},
                 borderColor: '#0d3b66',
                 backgroundColor: 'rgba(13, 59, 102, 0.1)',
                 fill: true,

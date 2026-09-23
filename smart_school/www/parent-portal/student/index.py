@@ -1,4 +1,5 @@
 import frappe
+from smart_school.fees import get_fee_statement
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
 
 def get_context(context):
@@ -23,14 +24,7 @@ def get_context(context):
     if latest_result:
         latest_result["term_name"] = frappe.get_cached_value("Term", latest_result["term"], "term_name")
 
-    latest_payment = frappe.get_all(
-        "Fee Payment",
-        filters={"student": selected_student.name},
-        fields=["balance"],
-        order_by="payment_date desc",
-        limit=1
-    )
-    current_balance = latest_payment[0].balance if latest_payment else 0
+    current_balance = get_fee_statement(selected_student.name).balance
 
     discipline_count = frappe.db.count("Discipline Record", filters={"student": selected_student.name})
 

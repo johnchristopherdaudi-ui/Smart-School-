@@ -60,12 +60,12 @@ body { background: var(--sp-bg); }
         <span class="sp-bell-wrap">
             <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count }}</span>
+            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
             <div class="sp-notif-dropdown" id="notifDropdown">
                 {% if notifications %}
                     {% for n in notifications %}
-                    <a href="{{ n.link }}" class="sp-notif-item">{{ n.message }}</a>
+                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
                     {% endfor %}
                 {% else %}
                     <div class="sp-notif-empty">Hakuna arifa mpya</div>
@@ -82,10 +82,10 @@ body { background: var(--sp-bg); }
     {% if announcements %}
         {% for a in announcements %}
         <div class="sp-announcement">
-            <span class="sp-tag">{{ a.class_list }}</span>
-            <span class="sp-tag">Kwa: {{ a.for_students }}</span>
-            <h4>{{ a.tittle }}</h4>
-            <div class="meta">{{ a.date }} &middot; {{ a.posted_by or "Shule" }}</div>
+            <span class="sp-tag">{{ a.class_list | e }}</span>
+            <span class="sp-tag">Kwa: {{ a.for_students | e }}</span>
+            <h4>{{ a.tittle | e }}</h4>
+            <div class="meta">{{ a.date | e }} &middot; {{ (a.posted_by or "Shule") | e }}</div>
             <div class="body">{{ a.message }}</div>
         </div>
         {% endfor %}
