@@ -82,8 +82,8 @@ body { background: var(--sp-bg); }
 
 <div class="sp-container">
     <div class="sp-profile-header">
-        {% if selected_student.photo %}
-            <img class="sp-avatar-lg" src="{{ selected_student.photo }}" alt="{{ selected_student.full_name }}">
+        {% if selected_student.photo_url %}
+            <img class="sp-avatar-lg" src="{{ selected_student.photo_url | e }}" alt="{{ selected_student.full_name | e }}">
         {% else %}
             <div class="sp-avatar-lg-fallback">{{ selected_student.initials }}</div>
         {% endif %}

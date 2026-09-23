@@ -94,8 +94,8 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
         {% for student in children %}
 <div class="col-md-6">
 <div class="sp-card">
-                {% if student.photo %}
-<img class="sp-avatar" src="{{ student.photo }}" alt="{{ student.full_name }}">
+                {% if student.photo_url %}
+<img class="sp-avatar" src="{{ student.photo_url | e }}" alt="{{ student.full_name | e }}">
                 {% else %}
 <div class="sp-avatar-fallback">{{ student.initials }}</div>
                 {% endif %}

@@ -1,3 +1,6 @@
+import mimetypes
+from urllib.parse import urlencode
+
 import frappe
 from frappe.utils import add_days, nowdate, now_datetime, get_datetime
 
@@ -19,8 +22,39 @@ def get_children(guardian):
         student = frappe.get_doc("Student", row.student)
         parts = (student.full_name or "").split()
         student.initials = "".join([p[0].upper() for p in parts[:2]]) if parts else "?"
+        student.photo_url = get_student_photo_url(student)
         children.append(student)
     return children
+
+
+def get_student_photo_url(student):
+    """Parents have no Student permission, so private photos are served through get_student_photo."""
+    if not student.photo or not student.photo.startswith("/private/"):
+        return student.photo
+    return "/api/method/smart_school.portal_utils.get_student_photo?" + urlencode({"student": student.name})
+
+
+@frappe.whitelist()
+def get_student_photo(student):
+    guardian = get_logged_in_guardian()
+    if student not in [row.student for row in guardian.students]:
+        frappe.throw("Huna ruhusa ya kuona picha hii", frappe.PermissionError)
+
+    photo = frappe.db.get_value("Student", student, "photo")
+    file_name = photo and frappe.db.get_value(
+        "File", {"file_url": photo, "attached_to_doctype": "Student", "attached_to_name": student}, "name"
+    )
+    if not file_name:
+        raise frappe.DoesNotExistError
+
+    file_doc = frappe.get_doc("File", file_name)
+    if not (mimetypes.guess_type(file_doc.file_name)[0] or "").startswith("image/"):
+        raise frappe.DoesNotExistError
+
+    frappe.local.response.filename = file_doc.file_name
+    frappe.local.response.filecontent = file_doc.get_content()
+    frappe.local.response.type = "download"
+    frappe.local.response.display_content_as = "inline"
 
 
 def get_performance_insight(class_name):

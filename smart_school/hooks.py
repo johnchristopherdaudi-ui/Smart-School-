@@ -129,8 +129,6 @@ doctype_list_js = {
 
 permission_query_conditions = {
 	"Exam Result": "smart_school.permissions.get_teacher_exam_result_permission_query",
-	"Student Term Result": "smart_school.permissions.get_guardian_student_term_result_permission_query",
-	"Student": "smart_school.permissions.get_guardian_student_permission_query",
 }
 # DocType Class
 # ---------------
