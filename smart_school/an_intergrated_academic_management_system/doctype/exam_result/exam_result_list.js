@@ -14,7 +14,7 @@ frappe.listview_settings['Exam Result'] = {
                     {
                         fieldname: 'info',
                         fieldtype: 'HTML',
-                        options: '<p>CSV format: first column = Student Full Name, remaining columns = Subject names, values = Marks.</p>'
+                        options: '<p>CSV / XLSX format: first column = Admission Number (or Full Name if unique in the class), remaining columns = Subject name or code, values = Marks.</p>'
                     },
                     {
                         label: 'CSV File',
@@ -27,25 +27,25 @@ frappe.listview_settings['Exam Result'] = {
                 primary_action(values) {
                     frappe.show_progress('Importing...', 50, 100, 'Processing CSV');
 
-                    frappe.db.get_value('Exam', values.exam, 'class', (r) => {
-                        frappe.call({
-                            method: 'smart_school.api.import_wide_format_csv',
-                            args: {
-                                file_url: values.file_url,
-                                exam: values.exam,
-                                class_name: r.class
-                            },
-                            callback: function(res) {
-                                frappe.hide_progress();
-                                let msg = `Created: ${res.message.created}, Skipped: ${res.message.skipped}`;
-                                if (res.message.not_found && res.message.not_found.length > 0) {
-                                    msg += `<br><br>Students not found:<br>${res.message.not_found.join('<br>')}`;
-                                }
-                                frappe.msgprint(msg);
-                                listview.refresh();
-                                d.hide();
+                    frappe.call({
+                        method: 'smart_school.api.import_wide_format_csv',
+                        args: {
+                            file_url: values.file_url,
+                            exam: values.exam
+                        },
+                        callback: function(res) {
+                            let msg = `Created: ${res.message.created}, Skipped (already entered): ${res.message.skipped}`;
+                            if (res.message.errors.length > 0) {
+                                let errors = res.message.errors.map(e => frappe.utils.escape_html(e));
+                                msg += `<br><br>Errors (${errors.length}):<br>${errors.join('<br>')}`;
                             }
-                        });
+                            frappe.msgprint(msg);
+                            listview.refresh();
+                            d.hide();
+                        },
+                        always: function() {
+                            frappe.hide_progress();
+                        }
                     });
                 }
             });

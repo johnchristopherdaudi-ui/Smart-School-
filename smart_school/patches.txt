@@ -5,3 +5,6 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 smart_school.patches.remove_parent_and_guest_custom_docperms
+smart_school.patches.rename_students_to_naming_series
+smart_school.patches.create_users_for_existing_teachers
+smart_school.patches.make_parents_website_users

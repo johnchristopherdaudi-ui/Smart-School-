@@ -15,6 +15,7 @@
   "email",
   "section_break_yfgg",
   "birth_certificate",
+  "birth_certificate_verified",
   "previous_school_certificate",
   "student",
   "status"
@@ -34,8 +35,7 @@
   {
    "fieldname": "birth_certificate",
    "fieldtype": "Attach",
-   "label": "Birth Certificate",
-   "reqd": 1
+   "label": "Birth Certificate"
   },
   {
    "fieldname": "full_name",
@@ -97,12 +97,19 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "0",
+   "description": "Tick after seeing the original certificate at school",
+   "fieldname": "birth_certificate_verified",
+   "fieldtype": "Check",
+   "label": "Birth Certificate Verified"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 12:40:05.000000",
+ "modified": "2026-09-23 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student Admission",

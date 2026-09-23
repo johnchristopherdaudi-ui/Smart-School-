@@ -2,13 +2,14 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:full_name",
+ "autoname": "STU-.YYYY.-.#####",
  "creation": "2026-09-09 11:06:40.938989",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "full_name",
   "date_of_birth",
+  "gender",
   "photo",
   "current_class",
   "current_section",
@@ -24,8 +25,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Full Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "date_of_birth",
@@ -81,16 +81,22 @@
    "label": "Admission Reference",
    "options": "Student Admission",
    "read_only": 1
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "\nMale\nFemale"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 12:40:05.000000",
+ "modified": "2026-09-23 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -137,8 +143,11 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "search_fields": "full_name,current_class",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "full_name",
  "track_changes": 1
 }

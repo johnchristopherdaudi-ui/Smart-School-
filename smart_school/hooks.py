@@ -43,9 +43,6 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {
-    "Student": "public/js/student.js"
-}
 doctype_list_js = {
 	"Exam Result": "an_intergrated_academic_management_system/doctype/exam_result/exam_result_list.js"
 }
@@ -256,3 +253,8 @@ scheduler_events = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# Fixtures
+# --------
+# Parent is portal-only: desk_access = 0 keeps guardians as Website Users
+fixtures = [{"dt": "Role", "filters": [["name", "=", "Parent"]]}]

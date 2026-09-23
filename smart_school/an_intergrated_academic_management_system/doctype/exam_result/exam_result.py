@@ -1,9 +1,23 @@
 import frappe
 from frappe.model.document import Document
+from smart_school.api import get_current_teacher
 from smart_school.notifications import send_notification
 
 
 class ExamResult(Document):
+    def before_insert(self):
+        # Never trust a teacher sent by the client
+        self.teacher = get_current_teacher() or self.get_assigned_teacher()
+
+    def get_assigned_teacher(self):
+        exam_class = frappe.get_value("Exam", self.exam, "class")
+        assigned = frappe.get_all(
+            "Teacher Subject Assignment",
+            filters={"parenttype": "Teacher", "subject": self.subject, "class": exam_class},
+            pluck="parent",
+        )
+        return next((t for t in assigned if frappe.db.exists("Teacher", t)), None)
+
     def validate(self):
         self.check_duplicate()
         self.set_grade()
@@ -34,7 +48,8 @@ class ExamResult(Document):
 
     def on_submit(self):
         self.update_student_term_result()
-        self.notify_guardian()
+        if not self.flags.skip_notification:
+            self.notify_guardian()
 
     def get_points(self, marks):
         grading = frappe.get_all(

@@ -1,14 +1,4 @@
 frappe.ui.form.on('Exam Result', {
-    onload: function(frm) {
-        if (frm.is_new()) {
-            frappe.db.get_value('Teacher', {user: frappe.session.user}, 'name', (r) => {
-                if (r && r.name) {
-                    frm.set_value('teacher', r.name);
-                }
-            });
-        }
-    },
-
     student: function(frm) {
         apply_subject_filter(frm);
     },

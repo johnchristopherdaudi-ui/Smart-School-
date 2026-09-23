@@ -1,42 +1,139 @@
+import csv
+import json
+
 import frappe
+
+MARKS_ENTRY_ROLES = ("Teacher", "Headmaster", "System Manager")
+MARKS_ADMIN_ROLES = ("Headmaster", "System Manager")
+MAX_MARKS = 100
+STUDENT_HEADERS = ("student", "name", "full name", "admission number", "admission no")
+
+
+class ImportRowError(Exception):
+    pass
 
 
 def get_current_teacher():
-    teacher = frappe.get_value("Teacher", {"user": frappe.session.user}, "name")
-    return teacher
+    return frappe.get_value("Teacher", {"user": frappe.session.user}, "name")
 
 
-def require_current_teacher():
+def _assert_can_enter_marks(exam):
+    """Return (exam class, teacher). teacher is None for Headmaster / System Manager,
+    who may enter any subject; Teachers are limited to their Teacher Subject Assignments."""
+    frappe.only_for(MARKS_ENTRY_ROLES)
+
+    exam_class = frappe.get_value("Exam", exam, "class")
+    if not exam_class:
+        frappe.throw(f"Exam {exam} not found", frappe.DoesNotExistError)
+
+    if set(MARKS_ADMIN_ROLES) & set(frappe.get_roles()):
+        return exam_class, None
+
     teacher = get_current_teacher()
     if not teacher:
-        frappe.throw("Only teachers can perform this action", frappe.PermissionError)
-    return teacher
+        frappe.throw("Your user is not linked to a Teacher record", frappe.PermissionError)
+    return exam_class, teacher
+
+
+def _subject_error(exam_class, subject, teacher):
+    if not frappe.db.exists("Class Subject Mapping", {"class": exam_class, "subject": subject}):
+        return f"{subject} is not taught in {exam_class}"
+
+    if teacher and not frappe.db.exists(
+        "Teacher Subject Assignment",
+        {"parenttype": "Teacher", "parent": teacher, "subject": subject, "class": exam_class},
+    ):
+        return f"You are not assigned to teach {subject} in {exam_class}"
+
+
+def _assert_can_enter_subject(exam_class, subject, teacher):
+    error = _subject_error(exam_class, subject, teacher)
+    if error:
+        frappe.throw(error, frappe.PermissionError)
 
 
 @frappe.whitelist()
 def bulk_create_exam_results(exam, subject, entries):
-    import json
+    exam_class, teacher = _assert_can_enter_marks(exam)
+    _assert_can_enter_subject(exam_class, subject, teacher)
 
     if isinstance(entries, str):
         entries = json.loads(entries)
 
-    teacher = require_current_teacher()
+    summary = _new_summary()
+    for i, entry in enumerate(entries, start=1):
+        _import_row(summary, f"Row {i}", entry.get("student"), exam, exam_class, subject, entry.get("marks"))
+    return summary
 
-    created = 0
-    skipped = 0
 
-    for entry in entries:
-        student = entry.get("student")
-        marks = entry.get("marks")
+@frappe.whitelist()
+def import_marks_from_csv(file_url, exam, subject):
+    exam_class, teacher = _assert_can_enter_marks(exam)
+    _assert_can_enter_subject(exam_class, subject, teacher)
 
-        existing = frappe.get_all(
-            "Exam Result",
-            filters={"student": student, "subject": subject, "exam": exam}
-        )
-
-        if existing:
-            skipped += 1
+    summary = _new_summary()
+    for i, row in enumerate(_read_file_rows(file_url), start=1):
+        if len(row) < 2 or not _cell(row[0]):
             continue
+        if i == 1 and _cell(row[0]).lower() in STUDENT_HEADERS:
+            continue
+        _import_row(summary, f"Row {i}", row[0], exam, exam_class, subject, row[1])
+    return summary
+
+
+@frappe.whitelist()
+def import_wide_format_csv(file_url, exam, class_name=None):
+    # class_name is kept for old callers; the class always comes from the exam
+    exam_class, teacher = _assert_can_enter_marks(exam)
+
+    rows = _read_file_rows(file_url)
+    if not rows:
+        frappe.throw("The file appears to be empty.")
+
+    summary = _new_summary()
+    subjects = []
+    for header in rows[0][1:]:
+        subject = _resolve_subject(header)
+        error = _subject_error(exam_class, subject, teacher) if subject else "subject not found"
+        if error and _cell(header):
+            summary["errors"].append(f"Column '{_cell(header)}': {error}")
+        subjects.append(None if error else subject)
+
+    if not any(subjects):
+        frappe.throw("No subject column in this file can be imported", frappe.PermissionError)
+
+    for i, row in enumerate(rows[1:], start=2):
+        if not row or not _cell(row[0]):
+            continue
+        for subject, marks_value in zip(subjects, row[1:]):
+            if subject:
+                _import_row(summary, f"Row {i}", row[0], exam, exam_class, subject, marks_value)
+
+    return summary
+
+
+def _new_summary():
+    return {"created": 0, "skipped": 0, "errors": []}
+
+
+def _import_row(summary, label, student_ref, exam, exam_class, subject, marks_value):
+    """Create and submit one Exam Result. Errors are collected per row instead of aborting the import."""
+    if _cell(marks_value) == "":
+        return
+
+    message_count = len(frappe.local.message_log)
+    frappe.db.savepoint("marks_row")
+    try:
+        student = _resolve_student(student_ref, exam_class)
+        marks = _parse_marks(marks_value)
+        if not _subject_allowed_for_student(exam_class, subject, student):
+            raise ImportRowError(f"{subject} is not in this student's combination")
+
+        if frappe.db.exists(
+            "Exam Result", {"student": student, "subject": subject, "exam": exam, "docstatus": ["<", 2]}
+        ):
+            summary["skipped"] += 1
+            return
 
         doc = frappe.get_doc({
             "doctype": "Exam Result",
@@ -44,189 +141,94 @@ def bulk_create_exam_results(exam, subject, entries):
             "subject": subject,
             "exam": exam,
             "marks": marks,
-            "teacher": teacher
         })
+        # Guardians get one summary when results are published, not one message per mark
+        doc.flags.skip_notification = True
         doc.insert(ignore_permissions=True)
         doc.submit()
+        summary["created"] += 1
+    except (ImportRowError, frappe.ValidationError, frappe.PermissionError) as e:
+        frappe.db.rollback(save_point="marks_row")
+        del frappe.local.message_log[message_count:]
+        summary["errors"].append(f"{label} ({_cell(student_ref)}, {subject}): {e}")
 
-        created += 1
 
-    return {"created": created, "skipped": skipped}
+def _resolve_student(student_ref, exam_class):
+    """Match by admission number (Student ID) first, then by full name if it is unique in the class."""
+    ref = _cell(student_ref)
+    if not ref:
+        raise ImportRowError("student is empty")
+
+    student = frappe.db.exists("Student", {"name": ref, "current_class": exam_class})
+    if student:
+        return student
+
+    matches = frappe.get_all("Student", filters={"full_name": ref, "current_class": exam_class}, pluck="name")
+    if len(matches) == 1:
+        return matches[0]
+    if matches:
+        raise ImportRowError(f"{len(matches)} students in {exam_class} share this name, use the admission number")
+    raise ImportRowError(f"student not found in {exam_class}")
 
 
-@frappe.whitelist()
-def import_marks_from_csv(file_url, exam, subject):
-    import csv
+def _resolve_subject(header):
+    ref = _cell(header)
+    if not ref:
+        return None
 
-    class_name = frappe.get_value("Exam", exam, "class")
-    teacher = require_current_teacher()
+    subject = frappe.db.exists("Subject", ref)
+    if subject:
+        return subject
 
-    file_doc = frappe.get_all("File", filters={"file_url": file_url}, fields=["name"])
+    for fieldname in ("subject_name", "subject_code"):
+        subject = frappe.db.get_value("Subject", {fieldname: ref}, "name")
+        if subject:
+            return subject
 
-    if not file_doc:
+
+def _subject_allowed_for_student(exam_class, subject, student):
+    combination = frappe.get_value("Student", student, "combination")
+    mappings = frappe.get_all(
+        "Class Subject Mapping",
+        filters={"class": exam_class, "subject": subject},
+        fields=["subject_scope", "combination"],
+    )
+    return any(m.subject_scope == "All Combinations" or m.combination == combination for m in mappings)
+
+
+def _parse_marks(value):
+    try:
+        marks = float(_cell(value))
+    except ValueError:
+        raise ImportRowError(f"marks '{_cell(value)}' is not a number")
+
+    if not 0 <= marks <= MAX_MARKS:
+        raise ImportRowError(f"marks {marks:g} must be between 0 and {MAX_MARKS}")
+    return marks
+
+
+def _cell(value):
+    return "" if value is None else str(value).strip()
+
+
+def _read_file_rows(file_url):
+    file_name = frappe.db.get_value("File", {"file_url": file_url}, "name")
+    if not file_name:
         frappe.throw(f"File not found for URL: {file_url}")
 
-    file_doc = frappe.get_doc("File", file_doc[0].name)
-    file_path = file_doc.get_full_path()
-
-    created = 0
-    skipped = 0
-    not_found = []
-
-    with open(file_path, "r") as f:
-        reader = csv.reader(f)
-        first_row = True
-
-        for row in reader:
-            if first_row:
-                first_row = False
-                if row[0].strip().lower() in ["full name", "name", "student"]:
-                    continue
-
-            if len(row) < 2:
-                continue
-
-            student_name = row[0].strip()
-            marks_value = row[1].strip()
-
-            if not student_name or not marks_value:
-                continue
-
-            try:
-                marks = float(marks_value)
-            except ValueError:
-                skipped += 1
-                continue
-
-            student = frappe.get_all(
-                "Student",
-                filters={"full_name": student_name, "current_class": class_name},
-                fields=["name"]
-            )
-
-            if not student:
-                not_found.append(student_name)
-                skipped += 1
-                continue
-
-            student_id = student[0].name
-
-            existing = frappe.get_all(
-                "Exam Result",
-                filters={"student": student_id, "subject": subject, "exam": exam}
-            )
-
-            if existing:
-                skipped += 1
-                continue
-
-            doc = frappe.get_doc({
-                "doctype": "Exam Result",
-                "student": student_id,
-                "subject": subject,
-                "exam": exam,
-                "marks": marks,
-                "teacher": teacher
-            })
-            doc.insert(ignore_permissions=True)
-            doc.submit()
-
-            created += 1
-
-    return {"created": created, "skipped": skipped, "not_found": not_found}
-
-
-@frappe.whitelist()
-def import_wide_format_csv(file_url, exam, class_name):
-    teacher = require_current_teacher()
-
-    file_doc = frappe.get_all("File", filters={"file_url": file_url}, fields=["name"])
-
-    if not file_doc:
-        frappe.throw(f"File not found for URL: {file_url}")
-
-    file_doc = frappe.get_doc("File", file_doc[0].name)
+    file_doc = frappe.get_doc("File", file_name)
+    file_doc.check_permission("read")
     file_path = file_doc.get_full_path()
 
     if file_path.lower().endswith(".xlsx"):
-        rows = read_excel_rows(file_path)
-    else:
-        rows = read_csv_rows(file_path)
-
-    if not rows:
-        frappe.throw("The file appears to be empty.")
-
-    header = rows[0]
-    subject_columns = header[1:]
-
-    created = 0
-    skipped = 0
-    not_found = []
-
-    for row in rows[1:]:
-        if not row or not str(row[0]).strip():
-            continue
-
-        student_name = str(row[0]).strip()
-
-        student = frappe.get_all(
-            "Student",
-            filters={"full_name": student_name, "current_class": class_name},
-            fields=["name"]
-        )
-
-        if not student:
-            not_found.append(student_name)
-            continue
-
-        student_id = student[0].name
-
-        for i, subject_name in enumerate(subject_columns):
-            if i + 1 >= len(row):
-                continue
-
-            marks_value = row[i + 1]
-
-            if marks_value is None or str(marks_value).strip() == "":
-                continue
-
-            try:
-                marks = float(marks_value)
-            except (ValueError, TypeError):
-                skipped += 1
-                continue
-
-            existing = frappe.get_all(
-                "Exam Result",
-                filters={"student": student_id, "subject": subject_name, "exam": exam}
-            )
-
-            if existing:
-                skipped += 1
-                continue
-
-            doc = frappe.get_doc({
-                "doctype": "Exam Result",
-                "student": student_id,
-                "subject": subject_name,
-                "exam": exam,
-                "marks": marks,
-                "teacher": teacher
-            })
-            doc.insert(ignore_permissions=True)
-            doc.submit()
-
-            created += 1
-
-    return {"created": created, "skipped": skipped, "not_found": not_found}
+        return read_excel_rows(file_path)
+    return read_csv_rows(file_path)
 
 
 def read_csv_rows(file_path):
-    import csv
-
-    with open(file_path, "r") as f:
-        reader = csv.reader(f)
-        return [row for row in reader]
+    # utf-8-sig strips the BOM that Excel adds, which otherwise breaks header detection
+    with open(file_path, encoding="utf-8-sig", newline="") as f:
+        return list(csv.reader(f))
 
 
 def read_excel_rows(file_path):
