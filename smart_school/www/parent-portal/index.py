@@ -1,9 +1,9 @@
 import frappe
 from smart_school.parent_dashboard import get_dashboard
-from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
+from smart_school.portal_utils import get_portal_guardian, get_children, get_notifications
 
 def get_context(context):
-    guardian = get_logged_in_guardian()
+    guardian = get_portal_guardian()
     children = get_children(guardian)
 
     selected_student = None

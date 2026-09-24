@@ -1,10 +1,10 @@
 from urllib.parse import urlencode
 
 import frappe
-from smart_school.portal_utils import assert_demo_payments_enabled, get_logged_in_guardian
+from smart_school.portal_utils import assert_demo_payments_enabled, get_portal_guardian
 
 def get_context(context):
-    guardian = get_logged_in_guardian()
+    guardian = get_portal_guardian()
     assert_demo_payments_enabled()
 
     reference = frappe.form_dict.get("ref")
@@ -22,4 +22,5 @@ def get_context(context):
     context.log = log
     context.reference = reference
     context.fees_url = "/parent-portal/fees?" + urlencode({"student": log.student})
+    context.hide_portal_nav = 1
     context.no_cache = 1

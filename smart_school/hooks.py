@@ -61,9 +61,9 @@ doctype_list_js = {
 # home_page = "login"
 
 # website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
+role_home_page = {
+	"Parent": "parent-portal",
+}
 
 # Generators
 # ----------
@@ -78,6 +78,9 @@ doctype_list_js = {
 jinja = {
 	"methods": ["smart_school.report_card.get_report_card_data"],
 }
+
+# Staff land on their role's workspace after login
+on_session_creation = ["smart_school.users.set_default_workspace"]
 
 # Installation
 # ------------

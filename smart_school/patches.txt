@@ -19,3 +19,4 @@ smart_school.patches.submit_existing_fee_payments
 smart_school.patches.set_risk_score_defaults
 smart_school.patches.reset_student_term_result_custom_perms
 smart_school.patches.set_grade_remarks
+smart_school.patches.set_staff_default_workspaces

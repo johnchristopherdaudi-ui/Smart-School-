@@ -3,12 +3,12 @@ from smart_school.fees import get_term_outstanding
 from smart_school.portal_utils import (
     assert_demo_payments_enabled,
     get_children,
-    get_logged_in_guardian,
+    get_portal_guardian,
     get_payment_providers,
 )
 
 def get_context(context):
-    guardian = get_logged_in_guardian()
+    guardian = get_portal_guardian()
     assert_demo_payments_enabled()
     children = get_children(guardian)
 
@@ -36,4 +36,5 @@ def get_context(context):
     context.term_name = term_name
     context.amount = amount
     context.providers = get_payment_providers()
+    context.hide_portal_nav = 1
     context.no_cache = 1

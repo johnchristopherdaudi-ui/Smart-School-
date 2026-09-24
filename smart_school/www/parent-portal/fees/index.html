@@ -1,33 +1,16 @@
-{% extends "templates/web.html" %}
+{% extends "smart_school/templates/parent_portal/base.html" %}
 
-{% block style %}
+{% block portal_style %}
 <style>
-:root {
-    --sp-primary: #0d3b66;
-    --sp-accent: #ffb703;
-    --sp-bg: #f4f6f9;
-    --sp-text: #22333b;
-}
-body { background: var(--sp-bg); }
-.sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
-.sp-nav-links { display: flex; align-items: center; }
-.sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
-.sp-nav-links a:hover { color: var(--sp-accent); }
 .sp-container { max-width: 1100px; margin: 0 auto; padding: 35px 20px; }
 .sp-welcome { font-size: 24px; font-weight: 700; color: var(--sp-text); margin-bottom: 20px; }
-
 .sp-child-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
 .sp-child-tab { padding: 8px 18px; border-radius: 20px; background: #fff; color: var(--sp-primary); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid #ddd; }
 .sp-child-tab.active { background: var(--sp-primary); color: #fff; border-color: var(--sp-primary); }
-
 .sp-balance-card { background: var(--sp-primary); color: #fff; border-radius: 12px; padding: 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
 .sp-balance-card .label { font-size: 14px; opacity: 0.85; }
 .sp-balance-card .amount { font-size: 32px; font-weight: 800; color: var(--sp-accent); }
-
 .sp-section-title { font-size: 15px; font-weight: 700; color: var(--sp-text); margin: 20px 0 12px; }
-
 .sp-summary-row { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 .sp-summary-row .term-name { font-weight: 700; color: var(--sp-primary); min-width: 90px; }
 .sp-summary-row .amounts { font-size: 13px; color: #666; }
@@ -35,66 +18,17 @@ body { background: var(--sp-bg); }
 .sp-summary-status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 .sp-summary-status.paid { background: #d4edda; color: #155724; }
 .sp-summary-status.owing { background: #f8d7da; color: #721c24; }
-
 .sp-table-wrap { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow-x: auto; }
 table.sp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 table.sp-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #eee; color: #777; font-size: 12px; text-transform: uppercase; }
 table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
-
 .sp-empty { color: #888; padding: 30px; text-align: center; background: #fff; border-radius: 12px; }
 .sp-pay-btn { background: var(--sp-accent); color: var(--sp-primary); padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 700; text-decoration: none; white-space: nowrap; }
 .sp-pay-btn:hover { opacity: 0.85; }
-
-.sp-bell-wrap { position: relative; margin-left: 22px; }
-.sp-bell { color: #dfe7f0; font-size: 18px; text-decoration: none; }
-.sp-bell:hover { color: var(--sp-accent); }
-.sp-bell-badge {
-    position: absolute; top: -8px; right: -10px;
-    background: #e63946; color: #fff;
-    font-size: 10px; font-weight: 700;
-    width: 18px; height: 18px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-}
-.sp-notif-dropdown {
-    display: none; position: absolute; top: 30px; right: 0;
-    background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    width: 280px; max-height: 320px; overflow-y: auto; z-index: 100;
-}
-.sp-notif-dropdown.show { display: block; }
-.sp-notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: var(--sp-text); font-size: 13px; text-decoration: none; }
-.sp-notif-item:hover { background: #f7f9fc; }
-.sp-notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
 </style>
 {% endblock %}
 
-{% block page_content %}
-<nav class="sp-navbar">
-    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
-    <div class="sp-nav-links">
-        <a href="/parent-portal">Dashboard</a>
-        <a href="/parent-portal/results">Matokeo</a>
-        <a href="/parent-portal/fees">Ada</a>
-        <a href="/parent-portal/announcements">Matangazo</a>
-        <a href="/parent-portal/discipline">Nidhamu</a>
-        <span class="sp-bell-wrap">
-            <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
-            {% if unseen_count and unseen_count > 0 %}
-            <span class="sp-bell-badge">{{ unseen_count | e }}</span>
-            {% endif %}
-            <div class="sp-notif-dropdown" id="notifDropdown">
-                {% if notifications %}
-                    {% for n in notifications %}
-                    <a href="{{ n.link | e }}" class="sp-notif-item">{{ n.message | e }}</a>
-                    {% endfor %}
-                {% else %}
-                    <div class="sp-notif-empty">Hakuna arifa mpya</div>
-                {% endif %}
-            </div>
-        </span>
-        <a href="/api/method/logout">Toka</a>
-    </div>
-</nav>
-
+{% block portal_content %}
 <div class="sp-container">
     <div class="sp-welcome">Ada za Shule</div>
 
@@ -184,16 +118,4 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <div class="sp-empty">Hakuna malipo yaliyorekodiwa bado.</div>
     {% endif %}
 </div>
-
-<script>
-function toggleNotifDropdown(e) {
-    e.stopPropagation();
-    document.getElementById('notifDropdown').classList.toggle('show');
-    frappe.call({ method: 'smart_school.portal_utils.mark_announcements_seen' });
-}
-document.addEventListener('click', function() {
-    var dropdown = document.getElementById('notifDropdown');
-    if (dropdown) dropdown.classList.remove('show');
-});
-</script>
 {% endblock %}

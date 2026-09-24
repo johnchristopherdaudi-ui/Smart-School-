@@ -1,16 +1,13 @@
-{% extends "templates/web.html" %}
+{% extends "smart_school/templates/parent_portal/base.html" %}
 
-{% block style %}
+{% block portal_style %}
 <style>
 :root {
     --sp-primary: #0d3b66;
     --sp-accent: #ffb703;
     --sp-bg: #f4f6f9;
 }
-body { background: var(--sp-bg); }
 .sp-navbar { background: var(--sp-primary); padding: 14px 30px; }
-.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 .sp-container { max-width: 480px; margin: 40px auto; padding: 0 20px; }
 .sp-checkout-card { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); text-align: center; }
 .sp-provider-badge { display: inline-block; background: var(--sp-bg); color: var(--sp-primary); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; margin-bottom: 20px; }
@@ -29,11 +26,7 @@ body { background: var(--sp-bg); }
 </style>
 {% endblock %}
 
-{% block page_content %}
-<nav class="sp-navbar">
-    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
-</nav>
-
+{% block portal_content %}
 <div class="sp-container">
     <div class="sp-checkout-card" id="checkoutCard">
         <div class="sp-provider-badge">{{ log.provider | e }}</div>
@@ -58,7 +51,9 @@ body { background: var(--sp-bg); }
         {% endif %}
     </div>
 </div>
+{% endblock %}
 
+{% block portal_script %}
 <script>
 var FEES_URL = {{ fees_url | tojson }};
 

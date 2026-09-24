@@ -1,0 +1,125 @@
+{
+ "charts": [
+  {
+   "chart_name": "Fee Collection by Term",
+   "label": "Fee Collection by Term"
+  }
+ ],
+ "content": "[{\"id\": \"ee1b2c5cf9\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Finance</b></span>\", \"col\": 12}}, {\"id\": \"eb81b3c591\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Fees Collected This Term\", \"col\": 3}}, {\"id\": \"f0beb73c46\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Outstanding Fees\", \"col\": 3}}, {\"id\": \"79f26a2845\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Fee Collection by Term\", \"col\": 12}}, {\"id\": \"4dfd89af7b\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Shortcuts</b></span>\", \"col\": 12}}, {\"id\": \"bc8aa9f551\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"New Fee Payment\", \"col\": 3}}, {\"id\": \"8ad36efff3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Draft payments\", \"col\": 3}}, {\"id\": \"52ce1676e4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Defaulters\", \"col\": 3}}, {\"id\": \"91d423ea44\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Fee Structure\", \"col\": 3}}, {\"id\": \"acad69bfb2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports &amp; Masters</b></span>\", \"col\": 12}}, {\"id\": \"566b8a1ea6\", \"type\": \"card\", \"data\": {\"card_name\": \"Fees\", \"col\": 4}}]",
+ "creation": "2026-09-24 18:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "money-coins-1",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Finance",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fees",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fee Payment",
+   "link_count": 0,
+   "link_to": "Fee Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fee Structure",
+   "link_count": 0,
+   "link_to": "Fee Structure",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fee Collection and Defaulters",
+   "link_count": 0,
+   "link_to": "Fee Collection and Defaulters",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-09-24 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Finance",
+ "number_cards": [
+  {
+   "label": "Fees Collected This Term",
+   "number_card_name": "Fees Collected This Term"
+  },
+  {
+   "label": "Outstanding Fees",
+   "number_card_name": "Outstanding Fees"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "Accountant"
+  },
+  {
+   "role": "Headmaster"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 32.0,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "New",
+   "label": "New Fee Payment",
+   "link_to": "Fee Payment",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "format": "{} pending",
+   "label": "Draft payments",
+   "link_to": "Fee Payment",
+   "stats_filter": "[[\"Fee Payment\", \"docstatus\", \"=\", 0, false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "label": "Defaulters",
+   "link_to": "Fee Collection and Defaulters",
+   "type": "Report"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Fee Structure",
+   "link_to": "Fee Structure",
+   "type": "DocType"
+  }
+ ],
+ "title": "Finance"
+}

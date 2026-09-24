@@ -11,6 +11,16 @@ from smart_school.an_intergrated_academic_management_system.doctype.smart_school
 from smart_school.fees import get_fee_statement, get_term_outstanding
 
 
+def get_portal_guardian():
+    """For portal pages: a guest is sent to the login page and brought back afterwards,
+    instead of seeing a permission error."""
+    if frappe.session.user == "Guest":
+        path = frappe.request.full_path.rstrip("?") if getattr(frappe.local, "request", None) else "/parent-portal"
+        frappe.local.flags.redirect_location = "/login?" + urlencode({"redirect-to": path})
+        raise frappe.Redirect
+    return get_logged_in_guardian()
+
+
 def get_logged_in_guardian():
     if frappe.session.user == "Guest":
         frappe.throw("Please login to view this page", frappe.PermissionError)

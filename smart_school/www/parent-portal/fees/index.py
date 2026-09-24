@@ -3,10 +3,10 @@ from smart_school.an_intergrated_academic_management_system.doctype.smart_school
     demo_payments_enabled,
 )
 from smart_school.fees import get_fee_statement
-from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
+from smart_school.portal_utils import get_portal_guardian, get_children, get_notifications
 
 def get_context(context):
-    guardian = get_logged_in_guardian()
+    guardian = get_portal_guardian()
     children = get_children(guardian)
     if not children:
         frappe.throw("No children linked to this account")

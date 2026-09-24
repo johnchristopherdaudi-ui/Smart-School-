@@ -1,0 +1,228 @@
+{
+ "charts": [
+  {
+   "chart_name": "Division Distribution",
+   "label": "Division Distribution"
+  },
+  {
+   "chart_name": "Absence Rate by Class",
+   "label": "Absence Rate by Class"
+  }
+ ],
+ "content": "[{\"id\": \"23984873eb\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Academics</b></span>\", \"col\": 12}}, {\"id\": \"38163a97ae\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Active Students\", \"col\": 3}}, {\"id\": \"11373d1dcc\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Division Distribution\", \"col\": 6}}, {\"id\": \"4f7f984193\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Absence Rate by Class\", \"col\": 6}}, {\"id\": \"458c64d594\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Shortcuts</b></span>\", \"col\": 12}}, {\"id\": \"ac0c0462ab\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Madarasa yangu\", \"col\": 3}}, {\"id\": \"2bdb7198a8\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Weka marks\", \"col\": 3}}, {\"id\": \"be78dd0a3f\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Upload marks\", \"col\": 3}}, {\"id\": \"d485648cdd\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Comments za kuandika\", \"col\": 3}}, {\"id\": \"33bb7240c7\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Attendance\", \"col\": 3}}, {\"id\": \"9e8a317d3a\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Discipline\", \"col\": 3}}, {\"id\": \"a60a53f306\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Exams\", \"col\": 3}}, {\"id\": \"281858f28d\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports &amp; Masters</b></span>\", \"col\": 12}}, {\"id\": \"00e1d29935\", \"type\": \"card\", \"data\": {\"card_name\": \"Reports\", \"col\": 4}}, {\"id\": \"d04a6f2f86\", \"type\": \"card\", \"data\": {\"card_name\": \"Records\", \"col\": 4}}]",
+ "creation": "2026-09-24 18:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "book",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Academics",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Class Merit List",
+   "link_count": 0,
+   "link_to": "Class Merit List",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Subject Performance",
+   "link_count": 0,
+   "link_to": "Subject Performance",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Division Summary",
+   "link_count": 0,
+   "link_to": "Division Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Attendance Summary",
+   "link_count": 0,
+   "link_to": "Attendance Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "At-Risk Students",
+   "link_count": 0,
+   "link_to": "At-Risk Students",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "My Classes",
+   "link_count": 0,
+   "link_to": "My Classes",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Records",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Exam Result",
+   "link_count": 0,
+   "link_to": "Exam Result",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Student Term Result",
+   "link_count": 0,
+   "link_to": "Student Term Result",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Attendance",
+   "link_count": 0,
+   "link_to": "Attendance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Discipline Record",
+   "link_count": 0,
+   "link_to": "Discipline Record",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-09-24 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Academics",
+ "number_cards": [
+  {
+   "label": "Active Students",
+   "number_card_name": "Active Students"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "Teacher"
+  },
+  {
+   "role": "Headmaster"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 31.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "label": "Madarasa yangu",
+   "link_to": "My Classes",
+   "type": "Report"
+  },
+  {
+   "color": "Green",
+   "doc_view": "New",
+   "label": "Weka marks",
+   "link_to": "Exam Result",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Upload marks",
+   "link_to": "Exam Result",
+   "type": "DocType"
+  },
+  {
+   "color": "Purple",
+   "label": "Comments za kuandika",
+   "link_to": "Pending Report Card Comments",
+   "type": "Report"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Attendance",
+   "link_to": "Attendance",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Discipline",
+   "link_to": "Discipline Record",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Exams",
+   "link_to": "Exam",
+   "type": "DocType"
+  }
+ ],
+ "title": "Academics"
+}

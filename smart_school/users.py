@@ -31,3 +31,27 @@ def assert_user_not_linked(doctype, user_name, name):
     other = frappe.db.get_value(doctype, {"user": user_name, "name": ["!=", name]}, "name")
     if other:
         frappe.throw(f"User {user_name} is already linked to {doctype} {other}")
+
+
+# Workspace each staff role lands on after login (first match wins)
+ROLE_WORKSPACES = (
+    ("Headmaster", "Headmaster"),
+    ("Accountant", "Finance"),
+    ("Teacher", "Academics"),
+    ("System Manager", "School Settings"),
+)
+
+
+def set_default_workspace(login_manager=None, user=None):
+    """on_session_creation: open the role's workspace after login. A workspace the user picked
+    themselves (not one of ours) is left alone."""
+    user = user or frappe.session.user
+    if user in ("Administrator", "Guest"):
+        return
+
+    roles = set(frappe.get_roles(user))
+    target = next((workspace for role, workspace in ROLE_WORKSPACES if role in roles), None)
+    current = frappe.db.get_value("User", user, "default_workspace")
+    ours = {workspace for _, workspace in ROLE_WORKSPACES}
+    if target and current != target and (not current or current in ours):
+        frappe.db.set_value("User", user, "default_workspace", target, update_modified=False)

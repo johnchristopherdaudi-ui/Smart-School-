@@ -1,17 +1,8 @@
-{% extends "templates/web.html" %}
+{% extends "smart_school/templates/parent_portal/base.html" %}
 
-{% block style %}
+{% block portal_style %}
 <style>
-:root {
-    --sp-primary: #0d3b66;
-    --sp-accent: #ffb703;
-    --sp-bg: #f4f6f9;
-    --sp-text: #22333b;
-}
-body { background: var(--sp-bg); }
 .sp-navbar { background: var(--sp-primary); padding: 14px 30px; }
-.sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 .sp-container { max-width: 480px; margin: 40px auto; padding: 0 20px; }
 .sp-pay-card { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); }
 .sp-pay-card h3 { color: var(--sp-primary); margin-bottom: 6px; }
@@ -31,11 +22,7 @@ body { background: var(--sp-bg); }
 </style>
 {% endblock %}
 
-{% block page_content %}
-<nav class="sp-navbar">
-    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
-</nav>
-
+{% block portal_content %}
 <div class="sp-container">
     <div class="sp-pay-card">
         <h3>Lipa Ada</h3>
@@ -66,7 +53,9 @@ body { background: var(--sp-bg); }
         <button class="sp-submit-btn" id="submitBtn" onclick="submitPayment()">Endelea na Malipo</button>
     </div>
 </div>
+{% endblock %}
 
+{% block portal_script %}
 <script>
 function submitPayment() {
     var phone = document.getElementById('phone').value;

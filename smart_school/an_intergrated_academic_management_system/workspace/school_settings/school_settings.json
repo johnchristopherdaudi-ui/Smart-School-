@@ -1,0 +1,208 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"541958b3ce\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>School Settings</b></span>\", \"col\": 12}}, {\"id\": \"0fd406b105\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Shortcuts</b></span>\", \"col\": 12}}, {\"id\": \"cf412148c0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Smart School Settings\", \"col\": 3}}, {\"id\": \"e92cfc24db\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Grading System\", \"col\": 3}}, {\"id\": \"d4f8cafe5c\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Division Grading\", \"col\": 3}}, {\"id\": \"d4d3236eb4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Terms\", \"col\": 3}}, {\"id\": \"e65d32d6a2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports &amp; Masters</b></span>\", \"col\": 12}}, {\"id\": \"27a16faff4\", \"type\": \"card\", \"data\": {\"card_name\": \"School Setup\", \"col\": 4}}, {\"id\": \"337c6845a9\", \"type\": \"card\", \"data\": {\"card_name\": \"Grading\", \"col\": 4}}, {\"id\": \"a7d8d11953\", \"type\": \"card\", \"data\": {\"card_name\": \"Payments\", \"col\": 4}}]",
+ "creation": "2026-09-24 18:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "setting",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "School Settings",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "School Setup",
+   "link_count": 7,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Academic Year",
+   "link_count": 0,
+   "link_to": "Academic Year",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Term",
+   "link_count": 0,
+   "link_to": "Term",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Class",
+   "link_count": 0,
+   "link_to": "Class",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Section",
+   "link_count": 0,
+   "link_to": "Section",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Subject",
+   "link_count": 0,
+   "link_to": "Subject",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Combination",
+   "link_count": 0,
+   "link_to": "Combination",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Class Subject Mapping",
+   "link_count": 0,
+   "link_to": "Class Subject Mapping",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Grading",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Grading System",
+   "link_count": 0,
+   "link_to": "Grading System",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Division Grading",
+   "link_count": 0,
+   "link_to": "Division Grading",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payments",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Smart School Settings",
+   "link_count": 0,
+   "link_to": "Smart School Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payment Gateway Log",
+   "link_count": 0,
+   "link_to": "Payment Gateway Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-09-24 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "School Settings",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 33.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Smart School Settings",
+   "link_to": "Smart School Settings",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Grading System",
+   "link_to": "Grading System",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Division Grading",
+   "link_to": "Division Grading",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Terms",
+   "link_to": "Term",
+   "type": "DocType"
+  }
+ ],
+ "title": "School Settings"
+}
