@@ -1,0 +1,33 @@
+{
+ "chart_name": "Absence Rate by Class",
+ "chart_type": "Custom",
+ "color": "#0d3b66",
+ "creation": "2026-09-24 16:00:00.000000",
+ "custom_options": "",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "",
+ "filters_json": "{}",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2026-09-24 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Absence Rate by Class",
+ "owner": "Administrator",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Headmaster"
+  },
+  {
+   "role": "Teacher"
+  }
+ ],
+ "source": "Absence Rate by Class",
+ "timeseries": 0,
+ "type": "Bar"
+}

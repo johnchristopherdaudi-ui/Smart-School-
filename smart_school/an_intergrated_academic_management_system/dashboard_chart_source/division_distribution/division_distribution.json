@@ -1,0 +1,13 @@
+{
+ "creation": "2026-09-24 16:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2026-09-24 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Division Distribution",
+ "owner": "Administrator",
+ "source_name": "Division Distribution",
+ "timeseries": 0
+}

@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 import frappe
 from smart_school.results import get_portal_results
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications, get_performance_insight
@@ -14,6 +16,10 @@ def get_context(context):
     # Exams zilizochapishwa tu; muhtasari wa term pale Exams zote za term zimechapishwa
     results = get_portal_results(selected_student.name)
     with_summary = [r for r in results if r.summary]
+    for r in with_summary:
+        r.report_card_url = "/api/method/smart_school.report_card.download_report_card?" + urlencode(
+            {"student": selected_student.name, "term": r.term}
+        )
 
     chart_labels = [r.term_name for r in with_summary]
     chart_values = [r.summary.average for r in with_summary]

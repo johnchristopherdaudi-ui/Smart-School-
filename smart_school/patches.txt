@@ -16,3 +16,6 @@ smart_school.patches.set_exam_defaults_and_publish_existing
 smart_school.patches.recompute_exam_and_term_results
 smart_school.patches.migrate_discipline_records
 smart_school.patches.submit_existing_fee_payments
+smart_school.patches.set_risk_score_defaults
+smart_school.patches.reset_student_term_result_custom_perms
+smart_school.patches.set_grade_remarks

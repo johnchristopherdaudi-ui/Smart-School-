@@ -115,6 +115,7 @@ def recompute_student_term_result(student, term):
         "division": division,
         "division_display": division_display,
     })
+    doc.flags.recompute = True
     doc.save(ignore_permissions=True)
     return doc.name
 
@@ -220,3 +221,20 @@ def get_portal_results(student):
         term.update(frappe.get_cached_value("Term", term.term, ["term_name", "start_date"], as_dict=True))
 
     return sorted(terms.values(), key=lambda t: t.start_date)
+
+
+def get_class_positions(class_name, term):
+    """Standard competition ranking by term average (1, 2, 2, 4) of the students with a division.
+    Students marked Incomplete get no position. Returns ({student: position}, ranked_results)."""
+    results = frappe.get_all(
+        "Student Term Result",
+        filters={"class": class_name, "term": term, "division": ["!=", INCOMPLETE]},
+        fields=["student", "average", "subjects_count", "total_points", "division", "division_display"],
+    )
+    ranked = sorted(results, key=lambda r: -flt(r.average, 2))
+    positions, position, previous = {}, 0, None
+    for i, r in enumerate(ranked, start=1):
+        if flt(r.average, 2) != previous:
+            position, previous = i, flt(r.average, 2)
+        positions[r.student] = position
+    return positions, ranked

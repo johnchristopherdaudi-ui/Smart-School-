@@ -4,8 +4,27 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "school_section",
+  "school_name",
+  "school_motto",
+  "school_logo",
+  "school_column_break",
+  "school_address",
+  "school_phone",
+  "school_email",
   "payments_section",
-  "enable_demo_payments"
+  "enable_demo_payments",
+  "risk_section",
+  "risk_weight_attendance",
+  "risk_weight_discipline",
+  "risk_weight_low_average",
+  "risk_column_break",
+  "risk_weight_failed_subjects",
+  "risk_weight_decline",
+  "risk_average_threshold",
+  "risk_levels_section",
+  "risk_medium_from",
+  "risk_high_from"
  ],
  "fields": [
   {
@@ -19,13 +38,131 @@
    "fieldname": "enable_demo_payments",
    "fieldtype": "Check",
    "label": "Enable Demo Payments"
+  },
+  {
+   "description": "Weights of the five parts must add up to 100. Each part is scored 0-1 for the current term.",
+   "fieldname": "risk_section",
+   "fieldtype": "Section Break",
+   "label": "Risk Score"
+  },
+  {
+   "default": "25",
+   "description": "Absent counts fully, Late half, Excused not at all; full at 30% of days",
+   "fieldname": "risk_weight_attendance",
+   "fieldtype": "Int",
+   "label": "Weight: Attendance",
+   "non_negative": 1
+  },
+  {
+   "default": "20",
+   "description": "Minor 1, Moderate 2, Serious 4 points; full at 8 points",
+   "fieldname": "risk_weight_discipline",
+   "fieldtype": "Int",
+   "label": "Weight: Discipline",
+   "non_negative": 1
+  },
+  {
+   "default": "25",
+   "fieldname": "risk_weight_low_average",
+   "fieldtype": "Int",
+   "label": "Weight: Low Average",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "risk_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "15",
+   "description": "Subjects graded F; full at 3",
+   "fieldname": "risk_weight_failed_subjects",
+   "fieldtype": "Int",
+   "label": "Weight: Failed Subjects",
+   "non_negative": 1
+  },
+  {
+   "default": "15",
+   "description": "Drop of the term average against the previous term; full at 10 points",
+   "fieldname": "risk_weight_decline",
+   "fieldtype": "Int",
+   "label": "Weight: Decline",
+   "non_negative": 1
+  },
+  {
+   "default": "45",
+   "description": "An average at or above this adds nothing",
+   "fieldname": "risk_average_threshold",
+   "fieldtype": "Int",
+   "label": "Low Average Below",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "risk_levels_section",
+   "fieldtype": "Section Break",
+   "label": "Risk Levels"
+  },
+  {
+   "default": "30",
+   "description": "Low is below this score",
+   "fieldname": "risk_medium_from",
+   "fieldtype": "Int",
+   "label": "Medium From",
+   "non_negative": 1
+  },
+  {
+   "default": "60",
+   "fieldname": "risk_high_from",
+   "fieldtype": "Int",
+   "label": "High From",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "school_section",
+   "fieldtype": "Section Break",
+   "label": "School"
+  },
+  {
+   "fieldname": "school_name",
+   "fieldtype": "Data",
+   "label": "School Name"
+  },
+  {
+   "fieldname": "school_motto",
+   "fieldtype": "Data",
+   "label": "Motto"
+  },
+  {
+   "fieldname": "school_logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "school_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "school_address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "school_phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "school_email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-23 18:00:00.000000",
+ "modified": "2026-09-24 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Smart School Settings",

@@ -56,6 +56,18 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 .sp-notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: var(--sp-text); font-size: 13px; text-decoration: none; }
 .sp-notif-item:hover { background: #f7f9fc; }
 .sp-notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+.sp-child-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.sp-child-tab { padding: 8px 16px; border-radius: 20px; background: #fff; color: var(--sp-primary); text-decoration: none; font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.sp-child-tab.active { background: var(--sp-primary); color: #fff; }
+.sp-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px; }
+.sp-stat-card { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); text-decoration: none; display: block; color: inherit; }
+.sp-stat-card .label { font-size: 13px; color: #888; margin-bottom: 6px; }
+.sp-stat-card .value { font-size: 24px; font-weight: 800; color: var(--sp-primary); }
+.sp-stat-card .sub { font-size: 12px; color: #999; margin-top: 4px; }
+.sp-section-title { font-size: 17px; font-weight: 700; color: var(--sp-text); margin: 10px 0 12px; }
+.sp-alert { background: #fff8e6; border-left: 4px solid var(--sp-accent); border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; color: var(--sp-text); }
+.sp-alert.ok { background: #eaf7ef; border-left-color: #2a9d8f; }
+.sp-chart-card { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 </style>
 {% endblock %}
 
@@ -90,28 +102,85 @@ font-weight: 800; font-size: 20px; flex-shrink: 0;
 <div class="sp-container">
 <div class="sp-welcome">Karibu, {{ guardian.full_name | e }} 👋</div>
 
-<div class="row">
-        {% for student in children %}
-<div class="col-md-6">
-<div class="sp-card">
-                {% if student.photo_url %}
-<img class="sp-avatar" src="{{ student.photo_url | e }}" alt="{{ student.full_name | e }}">
-                {% else %}
-<div class="sp-avatar-fallback">{{ student.initials | e }}</div>
-                {% endif %}
-<div class="sp-card-body">
-<h4>{{ student.full_name | e }}</h4>
-<p>Class: {{ (student.current_class or "-") | e }}</p>
-<p><span class="sp-badge">{{ (student.status or "Active") | e }}</span></p>
-<a class="sp-link" href="/parent-portal/student?student={{ student.name | urlencode }}">Ona Zaidi &rarr;</a>
-</div>
-</div>
-</div>
-        {% endfor %}
-</div>
+{% if not selected_student %}
+    <div class="sp-card">Hakuna mwanafunzi aliyeunganishwa na akaunti hii bado. Wasiliana na shule.</div>
+{% else %}
+{% set d = dashboard %}
+<div class="sp-child-tabs">
+    {% for child in children %}
+    <a class="sp-child-tab {% if child.name == selected_student.name %}active{% endif %}"
+       href="/parent-portal?student={{ child.name | urlencode }}">{{ child.full_name | e }}</a>
+    {% endfor %}
 </div>
 
+<div class="sp-card">
+    {% if selected_student.photo_url %}
+    <img class="sp-avatar" src="{{ selected_student.photo_url | e }}" alt="{{ selected_student.full_name | e }}">
+    {% else %}
+    <div class="sp-avatar-fallback">{{ selected_student.initials | e }}</div>
+    {% endif %}
+    <div class="sp-card-body">
+        <h4>{{ selected_student.full_name | e }}</h4>
+        <p>Darasa: {{ (selected_student.current_class or "-") | e }}</p>
+        <a class="sp-link" href="/parent-portal/student?student={{ selected_student.name | urlencode }}">Wasifu kamili &rarr;</a>
+    </div>
+</div>
+
+<div class="sp-stat-grid">
+    <a class="sp-stat-card" href="/parent-portal/results?student={{ selected_student.name | urlencode }}">
+        <div class="label">Matokeo ya karibuni</div>
+        {% if d.latest %}
+        <div class="value">{{ d.latest.summary.average | e }}</div>
+        <div class="sub">{{ d.latest.term_name | e }} &middot; {{ (d.latest.summary.division or "") | e }}</div>
+        {% else %}
+        <div class="value">-</div><div class="sub">Bado hayajachapishwa</div>
+        {% endif %}
+    </a>
+    <div class="sp-stat-card">
+        <div class="label">Mahudhurio muhula huu</div>
+        {% if d.attendance.rate is not none %}
+        <div class="value">{{ d.attendance.rate | e }}%</div>
+        <div class="sub">Siku {{ d.attendance.days }} &middot; hakuhudhuria {{ d.attendance.absent }}</div>
+        {% else %}
+        <div class="value">-</div><div class="sub">Hakuna rekodi bado</div>
+        {% endif %}
+    </div>
+    <a class="sp-stat-card" href="/parent-portal/fees?student={{ selected_student.name | urlencode }}">
+        <div class="label">Deni la ada</div>
+        <div class="value">{{ "{:,.0f}".format(d.fees.balance) }}</div>
+        <div class="sub">TZS{% if d.fees.credit > 0 %} &middot; salio la ziada {{ "{:,.0f}".format(d.fees.credit) }}{% endif %}</div>
+    </a>
+    <a class="sp-stat-card" href="/parent-portal/announcements">
+        <div class="label">Matangazo (siku 30)</div>
+        <div class="value">{{ d.announcements.count }}</div>
+        <div class="sub">{{ (d.announcements.latest or "Hakuna jipya") | e }}</div>
+    </a>
+</div>
+
+<div class="sp-section-title">Taarifa kwa mzazi</div>
+{% for a in d.alerts %}
+<div class="sp-alert {{ a.kind | e }}">{{ a.text | e }}</div>
+{% endfor %}
+
+{% if d.trend_values %}
+<div class="sp-section-title">Mwenendo wa wastani</div>
+<div class="sp-chart-card"><canvas id="trendChart" height="90"></canvas></div>
+{% endif %}
+{% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+{% if dashboard and dashboard.trend_values %}
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: {{ dashboard.trend_labels | tojson }},
+        datasets: [{ label: 'Wastani', data: {{ dashboard.trend_values | tojson }}, borderColor: '#0d3b66', backgroundColor: 'rgba(13,59,102,0.1)', fill: true, tension: 0.3 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+{% endif %}
 function toggleNotifDropdown(e) {
     e.stopPropagation();
     document.getElementById('notifDropdown').classList.toggle('show');

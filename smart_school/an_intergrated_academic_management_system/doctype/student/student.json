@@ -16,6 +16,9 @@
   "status",
   "admission_date",
   "risk_score",
+  "risk_level",
+  "risk_breakdown",
+  "risk_updated_on",
   "combination",
   "admission_reference"
  ],
@@ -56,7 +59,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Active\nTransferred\nDropped",
+   "options": "Active\nTransferred\nDropped\nGraduated",
    "reqd": 1
   },
   {
@@ -88,12 +91,33 @@
    "fieldtype": "Select",
    "label": "Gender",
    "options": "\nMale\nFemale"
+  },
+  {
+   "fieldname": "risk_level",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Risk Level",
+   "options": "\nLow\nMedium\nHigh",
+   "read_only": 1
+  },
+  {
+   "fieldname": "risk_breakdown",
+   "fieldtype": "Code",
+   "label": "Risk Breakdown",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "risk_updated_on",
+   "fieldtype": "Datetime",
+   "label": "Risk Updated On",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-24 14:00:00.000000",
+ "modified": "2026-09-24 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student",

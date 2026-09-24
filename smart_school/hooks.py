@@ -75,10 +75,9 @@ doctype_list_js = {
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "smart_school.utils.jinja_methods",
-# 	"filters": "smart_school.utils.jinja_filters"
-# }
+jinja = {
+	"methods": ["smart_school.report_card.get_report_card_data"],
+}
 
 # Installation
 # ------------

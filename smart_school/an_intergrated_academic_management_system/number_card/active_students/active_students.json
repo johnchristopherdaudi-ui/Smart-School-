@@ -1,0 +1,20 @@
+{
+ "color": "#0d3b66",
+ "creation": "2026-09-24 16:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Number Card",
+ "document_type": "Student",
+ "filters_json": "[[\"Student\", \"status\", \"=\", \"Active\", false]]",
+ "function": "Count",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "label": "Active Students",
+ "modified": "2026-09-24 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Active Students",
+ "owner": "Administrator",
+ "show_percentage_stats": 0,
+ "type": "Document Type"
+}

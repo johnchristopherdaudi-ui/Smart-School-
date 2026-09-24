@@ -64,16 +64,17 @@ def get_student_photo(student):
 
 
 def get_performance_insight(class_name):
-    """Pata Performance Insight ya karibuni zaidi kwa class hii."""
+    """Insight ya darasa zima (si ya somo) kwa term ya karibuni zaidi, kwa start_date ya Term."""
     if not class_name:
         return None
 
-    insight = frappe.get_all(
-        "Performance Insight",
-        filters={"class": class_name},
-        fields=["message", "change_percentage", "date_generated"],
-        order_by="date_generated desc",
-        limit=1
+    insight = frappe.db.sql(
+        """select pi.message, pi.change_percentage, pi.date_generated, pi.term
+        from `tabPerformance Insight` pi join `tabTerm` t on t.name = pi.term
+        where pi.class = %s and ifnull(pi.subject, '') = ''
+        order by t.start_date desc limit 1""",
+        class_name,
+        as_dict=True,
     )
     return insight[0] if insight else None
 

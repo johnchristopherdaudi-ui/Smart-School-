@@ -10,7 +10,7 @@ def get_fee_statement(student):
     the class recorded on that term's Fee Payments, else the Student Academic Record of that
     academic year, else the current class (current academic year and upcoming terms only).
     Only terms that have started count as debt; upcoming terms are listed so parents can pay early.
-    An overpayment reduces the next term's debt; whatever is left after the last term is `credit`."""
+    Overpayments pay the oldest outstanding term first; whatever is left after the last term is `credit`."""
     student_doc = frappe.get_cached_doc("Student", student)
     today_date = getdate(today())
 
@@ -42,7 +42,6 @@ def get_fee_statement(student):
             paid_classes.setdefault(p.term, p["class"])
 
     rows = []
-    credit = 0  # overpayment carried forward from earlier terms
     for term in terms:
         is_due = term.is_due
         student_class = paid_classes.get(term.name) or record_classes.get(term.academic_year)
@@ -55,11 +54,6 @@ def get_fee_statement(student):
             continue
 
         amount_due = amount_due or 0
-        credit_applied = min(credit, max(amount_due - total_paid, 0))
-        credit -= credit_applied
-        # Carry an overpayment forward only when the term's fee is known
-        overpaid = max(total_paid - amount_due, 0) if amount_due else 0
-        credit += overpaid
         rows.append(frappe._dict(
             term=term.name,
             term_name=term.term_name,
@@ -68,10 +62,16 @@ def get_fee_statement(student):
             is_due=is_due,
             amount_due=amount_due,
             total_paid=total_paid,
-            credit_applied=credit_applied,
-            remaining=max(amount_due - total_paid - credit_applied, 0),
-            overpaid=overpaid,
+            # An overpayment counts only when the term's fee is known
+            overpaid=max(total_paid - amount_due, 0) if amount_due else 0,
         ))
+
+    # Overpayments pay the oldest debt first; what is left moves on to later terms
+    credit = sum(r.overpaid for r in rows)
+    for r in rows:
+        r.credit_applied = min(credit, max(r.amount_due - r.total_paid, 0))
+        credit -= r.credit_applied
+        r.remaining = max(r.amount_due - r.total_paid - r.credit_applied, 0)
 
     return frappe._dict(
         student=student,

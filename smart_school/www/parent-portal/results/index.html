@@ -59,6 +59,8 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
 .sp-notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: var(--sp-text); font-size: 13px; text-decoration: none; }
 .sp-notif-item:hover { background: #f7f9fc; }
 .sp-notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+.sp-download-btn { float: right; font-size: 13px; font-weight: 600; background: var(--sp-accent); color: var(--sp-primary); padding: 5px 12px; border-radius: 8px; text-decoration: none; }
+.sp-download-btn:hover { opacity: .9; text-decoration: none; }
 </style>
 {% endblock %}
 
@@ -118,7 +120,9 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
     {% if results %}
         {% for r in results %}
         <div class="sp-term-card">
-            <h4>{{ r.term_name | e }}</h4>
+            <h4>{{ r.term_name | e }}
+                {% if r.report_card_url %}<a class="sp-download-btn" href="{{ r.report_card_url | e }}">&#8681; Pakua Report Card (PDF)</a>{% endif %}
+            </h4>
             {% if r.summary %}
             <div class="sp-term-stats">
                 <div class="sp-stat"><b>{{ r.summary.average | e }}</b>Wastani</div>
