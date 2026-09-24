@@ -19,8 +19,10 @@ def execute(filters=None):
 	)
 	names = dict(
 		frappe.get_all(
-			"Student", filters={"name": ["in", [r.student for r in results] or [""]]},
-			fields=["name", "full_name"], as_list=True,
+			"Student",
+			filters={"name": ["in", [r.student for r in results] or [""]]},
+			fields=["name", "full_name"],
+			as_list=True,
 		)
 	)
 

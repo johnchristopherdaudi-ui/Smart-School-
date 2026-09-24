@@ -17,7 +17,9 @@ def execute(filters=None):
 	by_student = filters.get("group_by") == "Student"
 
 	records = frappe.get_all(
-		"Attendance", filters={"term": filters.term, "class": ["in", classes or [""]]}, fields=["student", "class", "status"]
+		"Attendance",
+		filters={"term": filters.term, "class": ["in", classes or [""]]},
+		fields=["student", "class", "status"],
 	)
 	groups = {}
 	for r in records:
@@ -37,13 +39,23 @@ def execute(filters=None):
 
 
 def get_columns(by_student):
-	columns = [{"fieldname": "class", "label": "Class", "fieldtype": "Link", "options": "Class", "width": 100}]
+	columns = [
+		{"fieldname": "class", "label": "Class", "fieldtype": "Link", "options": "Class", "width": 100}
+	]
 	if by_student:
 		columns += [
-			{"fieldname": "student", "label": "Student", "fieldtype": "Link", "options": "Student", "width": 140},
+			{
+				"fieldname": "student",
+				"label": "Student",
+				"fieldtype": "Link",
+				"options": "Student",
+				"width": 140,
+			},
 			{"fieldname": "student_name", "label": "Student Name", "fieldtype": "Data", "width": 190},
 		]
 	columns += [{"fieldname": "days", "label": "Days Recorded", "fieldtype": "Int", "width": 110}]
 	columns += [{"fieldname": s.lower(), "label": s, "fieldtype": "Int", "width": 90} for s in STATUSES]
-	columns += [{"fieldname": "absence_rate", "label": "Absence Rate %", "fieldtype": "Percent", "width": 120}]
+	columns += [
+		{"fieldname": "absence_rate", "label": "Absence Rate %", "fieldtype": "Percent", "width": 120}
+	]
 	return columns

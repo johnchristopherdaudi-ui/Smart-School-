@@ -11,7 +11,9 @@ def execute(filters=None):
 	"""Number of students per division for a term, split by gender, per class."""
 	filters = frappe._dict(filters or {})
 	classes = get_allowed_classes(filters.get("class"))
-	divisions = frappe.get_all("Division Grading", pluck="division", order_by="minimum_points asc") + [INCOMPLETE]
+	divisions = frappe.get_all("Division Grading", pluck="division", order_by="minimum_points asc") + [
+		INCOMPLETE
+	]
 
 	results = frappe.db.sql(
 		"""select str.class, str.division, ifnull(s.gender, '') as gender, count(*) as n

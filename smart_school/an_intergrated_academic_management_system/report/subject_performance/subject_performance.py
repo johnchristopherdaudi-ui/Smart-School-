@@ -19,7 +19,9 @@ def execute(filters=None):
 
 	scores = {}
 	for r in frappe.get_all(
-		"Student Term Result", filters={"term": filters.term, "class": ["in", classes or [""]]}, fields=["student", "class"]
+		"Student Term Result",
+		filters={"term": filters.term, "class": ["in", classes or [""]]},
+		fields=["student", "class"],
 	):
 		for subject, score in get_subject_scores(r.student, filters.term)[0].items():
 			if filters.subject and subject != filters.subject:

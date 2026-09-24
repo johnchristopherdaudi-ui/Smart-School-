@@ -5,7 +5,15 @@ import frappe
 from frappe.model.document import Document
 
 COMPUTED_FIELDS = (
-	"student", "term", "class", "academic_year", "average", "division", "division_display", "total_points", "subjects_count",
+	"student",
+	"term",
+	"class",
+	"academic_year",
+	"average",
+	"division",
+	"division_display",
+	"total_points",
+	"subjects_count",
 )
 FULL_ACCESS_ROLES = ("Headmaster", "System Manager")
 
@@ -13,7 +21,9 @@ FULL_ACCESS_ROLES = ("Headmaster", "System Manager")
 class StudentTermResult(Document):
 	def validate(self):
 		other = frappe.db.get_value(
-			"Student Term Result", {"student": self.student, "term": self.term, "name": ["!=", self.name]}, "name"
+			"Student Term Result",
+			{"student": self.student, "term": self.term, "name": ["!=", self.name]},
+			"name",
 		)
 		if other:
 			frappe.throw(f"{other} already holds the result of {self.student} for {self.term}")
@@ -38,4 +48,7 @@ class StudentTermResult(Document):
 			class_teacher = frappe.db.get_value("Class", self.get("class"), "class_teacher")
 			user_teacher = frappe.db.get_value("Teacher", {"user": frappe.session.user}, "name")
 			if not class_teacher or class_teacher != user_teacher:
-				frappe.throw(f"Only the class teacher of {self.get('class')} can write this comment", frappe.PermissionError)
+				frappe.throw(
+					f"Only the class teacher of {self.get('class')} can write this comment",
+					frappe.PermissionError,
+				)

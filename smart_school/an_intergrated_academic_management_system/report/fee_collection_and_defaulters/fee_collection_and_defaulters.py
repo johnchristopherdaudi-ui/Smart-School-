@@ -19,7 +19,10 @@ def execute(filters=None):
 
 	data = []
 	for student in frappe.get_all(
-		"Student", filters=student_filters, fields=["name", "full_name", "current_class"], order_by="current_class, full_name"
+		"Student",
+		filters=student_filters,
+		fields=["name", "full_name", "current_class"],
+		order_by="current_class, full_name",
 	):
 		statement = get_fee_statement(student.name)
 		rows = [r for r in statement.rows if (r.term == filters.term if filters.term else r.is_due)]
@@ -30,18 +33,20 @@ def execute(filters=None):
 		if filters.only_defaulters and outstanding <= 0:
 			continue
 
-		data.append({
-			"student": student.name,
-			"student_name": student.full_name,
-			"class": student.current_class,
-			"terms": ", ".join(r.term for r in rows),
-			"amount_due": sum(r.amount_due for r in rows),
-			"paid": sum(r.total_paid for r in rows),
-			"credit_applied": sum(r.credit_applied for r in rows),
-			"outstanding": outstanding,
-			"credit_left": statement.credit,
-			"status": "Defaulter" if outstanding > 0 else "Cleared",
-		})
+		data.append(
+			{
+				"student": student.name,
+				"student_name": student.full_name,
+				"class": student.current_class,
+				"terms": ", ".join(r.term for r in rows),
+				"amount_due": sum(r.amount_due for r in rows),
+				"paid": sum(r.total_paid for r in rows),
+				"credit_applied": sum(r.credit_applied for r in rows),
+				"outstanding": outstanding,
+				"credit_left": statement.credit,
+				"status": "Defaulter" if outstanding > 0 else "Cleared",
+			}
+		)
 
 	return get_columns(), data
 

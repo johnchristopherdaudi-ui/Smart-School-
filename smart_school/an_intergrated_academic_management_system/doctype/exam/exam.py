@@ -29,4 +29,6 @@ class Exam(Document):
 				f"({', '.join(e.name for e in others)})"
 			)
 		if sum(weights) > 100:
-			frappe.throw(f"Weights of {self.get('class')} exams in {self.term} add up to {sum(weights):g}, more than 100")
+			frappe.throw(
+				f"Weights of {self.get('class')} exams in {self.term} add up to {sum(weights):g}, more than 100"
+			)

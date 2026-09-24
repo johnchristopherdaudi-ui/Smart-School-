@@ -27,8 +27,10 @@ class StudentPromotionTool(Document):
 
 		self.set("students", [])
 		for student in frappe.get_all(
-			"Student", filters={"current_class": self.from_class, "status": "Active"},
-			fields=["name", "full_name"], order_by="full_name asc",
+			"Student",
+			filters={"current_class": self.from_class, "status": "Active"},
+			fields=["name", "full_name"],
+			order_by="full_name asc",
 		):
 			last = frappe.db.sql(
 				"""select str.average, str.division, str.division_display
@@ -39,13 +41,16 @@ class StudentPromotionTool(Document):
 				as_dict=True,
 			)
 			last = last[0] if last else frappe._dict()
-			self.append("students", {
-				"student": student.name,
-				"student_name": student.full_name,
-				"final_average": last.get("average"),
-				"final_division": last.get("division_display") or last.get("division"),
-				"action": "Promote",
-			})
+			self.append(
+				"students",
+				{
+					"student": student.name,
+					"student_name": student.full_name,
+					"final_average": last.get("average"),
+					"final_division": last.get("division_display") or last.get("division"),
+					"action": "Promote",
+				},
+			)
 		return len(self.students)
 
 	@frappe.whitelist()

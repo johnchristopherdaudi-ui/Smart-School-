@@ -11,9 +11,13 @@ class Term(Document):
 		if getdate(self.start_date) >= getdate(self.end_date):
 			frappe.throw("Start Date must be before End Date")
 
-		year_start, year_end = frappe.db.get_value("Academic Year", self.academic_year, ["start_date", "end_date"])
+		year_start, year_end = frappe.db.get_value(
+			"Academic Year", self.academic_year, ["start_date", "end_date"]
+		)
 		if getdate(self.start_date) < getdate(year_start) or getdate(self.end_date) > getdate(year_end):
-			frappe.throw(f"The term must lie within the academic year {self.academic_year} ({year_start} to {year_end})")
+			frappe.throw(
+				f"The term must lie within the academic year {self.academic_year} ({year_start} to {year_end})"
+			)
 
 		overlap = frappe.get_all(
 			"Term",

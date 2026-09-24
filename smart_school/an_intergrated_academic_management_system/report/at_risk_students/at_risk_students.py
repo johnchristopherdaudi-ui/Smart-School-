@@ -15,14 +15,27 @@ def execute(filters=None):
 	filters = frappe._dict(filters or {})
 	classes = get_allowed_classes(filters.get("class"))
 
-	student_filters = {"status": "Active", "current_class": ["in", classes or [""]], "risk_level": ["is", "set"]}
+	student_filters = {
+		"status": "Active",
+		"current_class": ["in", classes or [""]],
+		"risk_level": ["is", "set"],
+	}
 	if filters.get("risk_level"):
 		student_filters["risk_level"] = filters.risk_level
 
 	data = []
 	for s in frappe.get_all(
-		"Student", filters=student_filters,
-		fields=["name", "full_name", "current_class", "risk_score", "risk_level", "risk_breakdown", "risk_updated_on"],
+		"Student",
+		filters=student_filters,
+		fields=[
+			"name",
+			"full_name",
+			"current_class",
+			"risk_score",
+			"risk_level",
+			"risk_breakdown",
+			"risk_updated_on",
+		],
 		order_by="risk_score desc",
 	):
 		breakdown = json.loads(s.risk_breakdown or "{}")
@@ -43,12 +56,24 @@ def execute(filters=None):
 
 
 def get_columns():
-	pts = lambda fieldname, label: {"fieldname": fieldname, "label": label, "fieldtype": "Float", "precision": 1, "width": 100}
+	pts = lambda fieldname, label: {
+		"fieldname": fieldname,
+		"label": label,
+		"fieldtype": "Float",
+		"precision": 1,
+		"width": 100,
+	}
 	return [
 		{"fieldname": "student", "label": "Student", "fieldtype": "Link", "options": "Student", "width": 140},
 		{"fieldname": "student_name", "label": "Student Name", "fieldtype": "Data", "width": 190},
 		{"fieldname": "class", "label": "Class", "fieldtype": "Link", "options": "Class", "width": 90},
-		{"fieldname": "risk_score", "label": "Risk Score", "fieldtype": "Float", "precision": 1, "width": 100},
+		{
+			"fieldname": "risk_score",
+			"label": "Risk Score",
+			"fieldtype": "Float",
+			"precision": 1,
+			"width": 100,
+		},
 		{"fieldname": "risk_level", "label": "Level", "fieldtype": "Data", "width": 80},
 		pts("attendance", "Attendance"),
 		pts("discipline", "Discipline"),

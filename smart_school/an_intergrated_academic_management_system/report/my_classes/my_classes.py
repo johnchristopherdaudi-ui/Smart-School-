@@ -17,7 +17,9 @@ def execute(filters=None):
 	if scope is not None:
 		assignment_filters["parent"] = teacher or ""
 	assignments = frappe.get_all(
-		"Teacher Subject Assignment", filters=assignment_filters, fields=["parent", "class", "subject"],
+		"Teacher Subject Assignment",
+		filters=assignment_filters,
+		fields=["parent", "class", "subject"],
 		order_by="class asc, subject asc",
 	)
 	teacher_names = dict(frappe.get_all("Teacher", fields=["name", "full_name"], as_list=True))
@@ -31,15 +33,17 @@ def execute(filters=None):
 			where e.term = %s and e.class = %s and er.subject = %s and er.docstatus = 1""",
 			(filters.term, a["class"], a.subject),
 		)[0][0]
-		data.append({
-			"class": a["class"],
-			"subject": a.subject,
-			"teacher": teacher_names.get(a.parent),
-			"students": students,
-			"with_marks": entered,
-			"missing": max(students - entered, 0),
-			"class_teacher": "Yes" if class_teachers.get(a["class"]) == a.parent else "",
-		})
+		data.append(
+			{
+				"class": a["class"],
+				"subject": a.subject,
+				"teacher": teacher_names.get(a.parent),
+				"students": students,
+				"with_marks": entered,
+				"missing": max(students - entered, 0),
+				"class_teacher": "Yes" if class_teachers.get(a["class"]) == a.parent else "",
+			}
+		)
 	return get_columns(), data
 
 
