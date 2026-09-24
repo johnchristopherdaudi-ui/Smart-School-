@@ -10,3 +10,7 @@ smart_school.patches.create_users_for_existing_teachers
 smart_school.patches.make_parents_website_users
 smart_school.patches.set_class_on_fee_payments
 smart_school.patches.update_payment_gateway_logs
+smart_school.patches.seed_grading_tables
+smart_school.patches.rename_announcement_title
+smart_school.patches.set_exam_defaults_and_publish_existing
+smart_school.patches.recompute_exam_and_term_results

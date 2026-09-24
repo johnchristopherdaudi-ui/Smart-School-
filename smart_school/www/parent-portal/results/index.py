@@ -1,4 +1,5 @@
 import frappe
+from smart_school.results import get_portal_results
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications, get_performance_insight
 
 def get_context(context):
@@ -10,24 +11,12 @@ def get_context(context):
     selected_id = frappe.form_dict.get("student") or children[0].name
     selected_student = next((c for c in children if c.name == selected_id), children[0])
 
-    results = frappe.get_all(
-        "Student Term Result",
-        filters={"student": selected_student.name},
-        fields=["term", "average", "division", "division_display", "total_points"],
-        order_by="term"
-    )
+    # Exams zilizochapishwa tu; muhtasari wa term pale Exams zote za term zimechapishwa
+    results = get_portal_results(selected_student.name)
+    with_summary = [r for r in results if r.summary]
 
-    for r in results:
-        term_doc = frappe.get_cached_doc("Term", r.term)
-        r.term_name = term_doc.term_name
-        r.subjects = frappe.get_all(
-            "Exam Result",
-            filters={"student": selected_student.name, "exam": ["in", frappe.get_all("Exam", filters={"term": r.term}, pluck="name")]},
-            fields=["subject", "marks", "grade"]
-        )
-
-    chart_labels = [r.term_name for r in results]
-    chart_values = [r.average or 0 for r in results]
+    chart_labels = [r.term_name for r in with_summary]
+    chart_values = [r.summary.average for r in with_summary]
 
     insight = get_performance_insight(selected_student.current_class)
 

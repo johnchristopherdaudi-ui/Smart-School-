@@ -6,19 +6,19 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "tittle",
+  "title",
   "message",
-  "class",
   "date",
+  "audience",
   "posted_by",
   "classes"
  ],
  "fields": [
   {
-   "fieldname": "tittle",
+   "fieldname": "title",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Tittle",
+   "label": "Title",
    "reqd": 1
   },
   {
@@ -36,29 +36,32 @@
    "reqd": 1
   },
   {
-   "fieldname": "class",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Class",
-   "options": "Class"
-  },
-  {
    "fieldname": "posted_by",
    "fieldtype": "Link",
    "label": "Posted by",
    "options": "User"
   },
   {
+   "depends_on": "eval:doc.audience==\"Specific Classes\"",
    "fieldname": "classes",
    "fieldtype": "Table MultiSelect",
    "label": "Classes",
+   "mandatory_depends_on": "eval:doc.audience==\"Specific Classes\"",
    "options": "Announcement Class"
+  },
+  {
+   "default": "Specific Classes",
+   "fieldname": "audience",
+   "fieldtype": "Select",
+   "label": "Audience",
+   "options": "Specific Classes\nAll School",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 12:40:05.000000",
+ "modified": "2026-09-24 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Announcement",
@@ -112,5 +115,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "title"
 }

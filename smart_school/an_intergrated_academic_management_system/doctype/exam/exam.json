@@ -9,7 +9,11 @@
   "exam_name",
   "term",
   "academic_year",
-  "class"
+  "class",
+  "max_marks",
+  "weight",
+  "results_published",
+  "published_on"
  ],
  "fields": [
   {
@@ -42,12 +46,41 @@
    "label": "Class",
    "options": "Class",
    "reqd": 1
+  },
+  {
+   "default": "100",
+   "fieldname": "max_marks",
+   "fieldtype": "Float",
+   "label": "Max Marks",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Share of this exam in the term subject score. Leave empty to use a plain average.",
+   "fieldname": "weight",
+   "fieldtype": "Percent",
+   "label": "Weight"
+  },
+  {
+   "fieldname": "results_published",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Results Published",
+   "read_only": 1
+  },
+  {
+   "depends_on": "results_published",
+   "fieldname": "published_on",
+   "fieldtype": "Datetime",
+   "label": "Published On",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:23:27.898815",
+ "modified": "2026-09-24 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Exam",

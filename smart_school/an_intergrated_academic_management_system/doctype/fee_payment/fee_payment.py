@@ -1,5 +1,6 @@
 import frappe
 from frappe.model.document import Document
+from frappe.utils import flt
 from smart_school.fees import get_class_for_term
 from smart_school.notifications import send_notification
 
@@ -67,9 +68,10 @@ class FeePayment(Document):
         else:
             self.status = "Partial"
 
-    def on_update(self):
+    def after_insert(self):
+        # Only a new payment is news for the guardian; later edits must not re-send it
         self.notify_guardian()
 
     def notify_guardian(self):
-        message = f"Payment of {self.amount_paid} received. Balance remaining: {self.balance}."
+        message = f"Malipo ya {flt(self.amount_paid):,.0f} TZS yamepokelewa. Salio la muhula huu: {flt(self.balance):,.0f} TZS."
         send_notification(self.student, message, "Fee Payment")

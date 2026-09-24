@@ -5,7 +5,6 @@ import frappe
 
 MARKS_ENTRY_ROLES = ("Teacher", "Headmaster", "System Manager")
 MARKS_ADMIN_ROLES = ("Headmaster", "System Manager")
-MAX_MARKS = 100
 STUDENT_HEADERS = ("student", "name", "full name", "admission number", "admission no")
 
 
@@ -125,7 +124,7 @@ def _import_row(summary, label, student_ref, exam, exam_class, subject, marks_va
     frappe.db.savepoint("marks_row")
     try:
         student = _resolve_student(student_ref, exam_class)
-        marks = _parse_marks(marks_value)
+        marks = _parse_marks(marks_value, frappe.get_cached_value("Exam", exam, "max_marks") or 100)
         if not _subject_allowed_for_student(exam_class, subject, student):
             raise ImportRowError(f"{subject} is not in this student's combination")
 
@@ -142,8 +141,6 @@ def _import_row(summary, label, student_ref, exam, exam_class, subject, marks_va
             "exam": exam,
             "marks": marks,
         })
-        # Guardians get one summary when results are published, not one message per mark
-        doc.flags.skip_notification = True
         doc.insert(ignore_permissions=True)
         doc.submit()
         summary["created"] += 1
@@ -196,14 +193,14 @@ def _subject_allowed_for_student(exam_class, subject, student):
     return any(m.subject_scope == "All Combinations" or m.combination == combination for m in mappings)
 
 
-def _parse_marks(value):
+def _parse_marks(value, max_marks):
     try:
         marks = float(_cell(value))
     except ValueError:
         raise ImportRowError(f"marks '{_cell(value)}' is not a number")
 
-    if not 0 <= marks <= MAX_MARKS:
-        raise ImportRowError(f"marks {marks:g} must be between 0 and {MAX_MARKS}")
+    if not 0 <= marks <= max_marks:
+        raise ImportRowError(f"marks {marks:g} must be between 0 and {max_marks:g}")
     return marks
 
 

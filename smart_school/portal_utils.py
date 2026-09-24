@@ -99,23 +99,55 @@ def get_notifications(guardian, children):
                 unseen_count += 1
 
     class_names = list({c.current_class for c in children if c.current_class})
-    if class_names:
-        recent_announcements = frappe.get_all(
-            "Announcement",
-            filters={"class": ["in", class_names], "date": [">=", add_days(nowdate(), -30)]},
-            fields=["name", "tittle", "class", "creation"],
-            order_by="creation desc"
+    for a in get_announcements(class_names, since=add_days(nowdate(), -30)):
+        notifications.append({
+            "type": "announcement",
+            "message": f"Tangazo jipya: {a.title}",
+            "link": "/parent-portal/announcements"
+        })
+        if not last_seen or get_datetime(a.creation) > last_seen:
+            unseen_count += 1
+
+    # Matokeo mapya: Exams zilizochapishwa ndani ya siku 30 ambazo watoto wana matokeo
+    child_names = {c.name: c.full_name for c in children}
+    for exam in frappe.get_all(
+        "Exam",
+        filters={"results_published": 1, "published_on": [">=", add_days(nowdate(), -30)]},
+        fields=["name", "exam_name", "published_on"],
+        order_by="published_on desc",
+    ):
+        students = frappe.get_all(
+            "Exam Result",
+            filters={"exam": exam.name, "student": ["in", list(child_names)], "docstatus": 1},
+            pluck="student",
+            distinct=True,
         )
-        for a in recent_announcements:
+        for student in students:
             notifications.append({
-                "type": "announcement",
-                "message": f"Tangazo jipya: {a.tittle}",
-                "link": "/parent-portal/announcements"
+                "type": "result",
+                "message": f"Matokeo mapya ya {exam.exam_name}: {child_names[student]}",
+                "link": "/parent-portal/results?" + urlencode({"student": student})
             })
-            if not last_seen or get_datetime(a.creation) > last_seen:
+            if not last_seen or get_datetime(exam.published_on) > last_seen:
                 unseen_count += 1
 
     return {"items": notifications, "unseen_count": unseen_count}
+
+
+def get_announcements(class_names, since=None, fields=("name", "title", "creation")):
+    """Announcements for the whole school plus those addressed to any of these classes, newest first."""
+    names = set(frappe.get_all("Announcement", filters={"audience": "All School"}, pluck="name"))
+    if class_names:
+        names.update(frappe.get_all(
+            "Announcement Class", filters={"parenttype": "Announcement", "class": ["in", class_names]}, pluck="parent"
+        ))
+    if not names:
+        return []
+
+    filters = {"name": ["in", list(names)]}
+    if since:
+        filters["date"] = [">=", since]
+    return frappe.get_all("Announcement", filters=filters, fields=list(fields), order_by="date desc, creation desc")
 
 
 @frappe.whitelist()

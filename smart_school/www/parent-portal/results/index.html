@@ -119,16 +119,20 @@ table.sp-table td { padding: 8px; border-bottom: 1px solid #f0f0f0; }
         {% for r in results %}
         <div class="sp-term-card">
             <h4>{{ r.term_name | e }}</h4>
+            {% if r.summary %}
             <div class="sp-term-stats">
-                <div class="sp-stat"><b>{{ r.average | e }}</b>Average</div>
-                <div class="sp-stat"><b>{{ (r.division_display or r.division) | e }}</b>Division</div>
-                <div class="sp-stat"><b>{{ r.total_points | e }}</b>Total Points</div>
+                <div class="sp-stat"><b>{{ r.summary.average | e }}</b>Wastani</div>
+                <div class="sp-stat"><b>{{ (r.summary.division_display or r.summary.division) | e }}</b>Division</div>
+                <div class="sp-stat"><b>{{ r.summary.subjects_count | e }}</b>Masomo</div>
             </div>
+            {% else %}
+            <div class="sp-empty">Muhtasari wa term utaonekana mitihani yote ya term hii ikishachapishwa.</div>
+            {% endif %}
             {% if r.subjects %}
             <table class="sp-table">
-                <tr><th>Subject</th><th>Marks</th><th>Grade</th></tr>
+                <tr><th>Mtihani</th><th>Somo</th><th>Alama</th><th>Grade</th></tr>
                 {% for s in r.subjects %}
-                <tr><td>{{ s.subject | e }}</td><td>{{ s.marks | e }}</td><td>{{ s.grade | e }}</td></tr>
+                <tr><td>{{ s.exam_name | e }}</td><td>{{ s.subject | e }}</td><td>{{ "{:g}".format(s.marks) }}/{{ "{:g}".format(s.max_marks) }}</td><td>{{ s.grade | e }}</td></tr>
                 {% endfor %}
             </table>
             {% endif %}

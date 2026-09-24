@@ -7,9 +7,12 @@
  "field_order": [
   "student",
   "term",
+  "class",
+  "academic_year",
   "average",
   "division",
   "total_points",
+  "subjects_count",
   "division_display"
  ],
  "fields": [
@@ -50,12 +53,33 @@
    "fieldtype": "Data",
    "label": "Division Display",
    "read_only": 1
+  },
+  {
+   "fieldname": "class",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Class",
+   "options": "Class",
+   "read_only": 1
+  },
+  {
+   "fieldname": "academic_year",
+   "fieldtype": "Link",
+   "label": "Academic Year",
+   "options": "Academic Year",
+   "read_only": 1
+  },
+  {
+   "fieldname": "subjects_count",
+   "fieldtype": "Int",
+   "label": "Subjects Count",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 12:40:05.000000",
+ "modified": "2026-09-24 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student Term Result",

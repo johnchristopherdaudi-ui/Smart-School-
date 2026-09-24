@@ -84,7 +84,7 @@ body { background: var(--sp-bg); }
         <div class="sp-announcement">
             <span class="sp-tag">{{ a.class_list | e }}</span>
             <span class="sp-tag">Kwa: {{ a.for_students | e }}</span>
-            <h4>{{ a.tittle | e }}</h4>
+            <h4>{{ a.title | e }}</h4>
             <div class="meta">{{ a.date | e }} &middot; {{ (a.posted_by or "Shule") | e }}</div>
             <div class="body">{{ a.message }}</div>
         </div>

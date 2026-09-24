@@ -1,5 +1,6 @@
 import frappe
 from smart_school.fees import get_fee_statement
+from smart_school.results import get_portal_results
 from smart_school.portal_utils import get_logged_in_guardian, get_children, get_notifications
 
 def get_context(context):
@@ -13,16 +14,12 @@ def get_context(context):
     if not selected_student:
         frappe.throw("Huwezi kuona taarifa za mwanafunzi huyu")
 
-    latest_result = frappe.get_all(
-        "Student Term Result",
-        filters={"student": selected_student.name},
-        fields=["term", "average", "division_display", "division"],
-        order_by="creation desc",
-        limit=1
-    )
-    latest_result = latest_result[0] if latest_result else None
-    if latest_result:
-        latest_result["term_name"] = frappe.get_cached_value("Term", latest_result["term"], "term_name")
+    # Muhtasari wa term ya karibuni uliochapishwa kikamilifu
+    published_terms = [r for r in get_portal_results(selected_student.name) if r.summary]
+    latest_result = None
+    if published_terms:
+        latest = published_terms[-1]
+        latest_result = frappe._dict(latest.summary, term_name=latest.term_name)
 
     current_balance = get_fee_statement(selected_student.name).balance
 
