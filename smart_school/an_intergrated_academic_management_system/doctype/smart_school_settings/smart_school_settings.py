@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from smart_school.branding import make_logo_public, sync_website_settings
+
 RISK_WEIGHTS = (
 	"risk_weight_attendance",
 	"risk_weight_discipline",
@@ -22,6 +24,10 @@ class SmartSchoolSettings(Document):
 			frappe.throw("Risk levels must satisfy 0 < Medium From < High From <= 100")
 		if not 0 < (self.risk_average_threshold or 0) <= 100:
 			frappe.throw("Low Average Below must be between 1 and 100")
+		make_logo_public(self)
+
+	def on_update(self):
+		sync_website_settings(self)
 
 
 def demo_payments_enabled():

@@ -2,6 +2,8 @@
 {#- Shared layout of the parent portal: styles, navbar with the notification bell, and the bell script.
     Pages fill portal_style, portal_content and portal_script. hide_portal_nav hides the links (payment pages). -#}
 
+{% block title %}{{ get_school_branding().name | e }}{% endblock %}
+
 {% block style %}
 <style>
 :root {
@@ -13,7 +15,8 @@
 body { background: var(--sp-bg); }
 .sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 .sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-.sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.sp-brand .sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+.sp-brand img.sp-logo { background: #fff; object-fit: contain; padding: 2px; }
 .sp-nav-links { display: flex; align-items: center; margin-left: auto; }
 .sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
 .sp-nav-links a:hover { color: var(--sp-accent); }
@@ -43,8 +46,8 @@ body { background: var(--sp-bg); }
 .sp-page .sp-table-wrap, .sp-page .sp-term-card { overflow-x: auto; }
 @media (max-width: 767px) {
     .sp-navbar { padding: 10px 14px; }
-    .sp-brand { font-size: 18px; }
-    .sp-nav-actions { margin-left: auto; }
+    .sp-brand { font-size: 16px; line-height: 1.25; flex: 1 1 0; min-width: 0; }
+    .sp-nav-actions { margin-left: 12px; }
     .sp-bell-wrap { margin-left: 0; }
     .sp-menu-toggle { display: block; }
     .sp-nav-links { display: none; order: 3; flex-basis: 100%; flex-direction: column; align-items: stretch; margin-left: 0; padding-top: 6px; }
@@ -64,7 +67,10 @@ body { background: var(--sp-bg); }
 {% block content %}
 <div class="sp-page">
 <nav class="sp-navbar">
-    <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
+    {%- set school = get_school_branding() %}
+    <a href="/parent-portal" class="sp-brand">
+        {%- if school.logo %}<img src="{{ school.logo | e }}" class="sp-logo" alt="">
+        {%- else %}<span class="sp-logo">{{ school.initials | e }}</span>{% endif %} {{ school.name | e }}</a>
     {% if not hide_portal_nav %}
     <div class="sp-nav-links" id="portalMenu">
         <a href="/parent-portal">Dashboard</a>

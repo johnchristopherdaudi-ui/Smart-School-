@@ -3,6 +3,7 @@
 import frappe
 
 from smart_school import report_card
+from smart_school.branding import get_school_branding
 from smart_school.tests.factory import (
 	HEADMASTER,
 	PARENT_1,
@@ -60,6 +61,8 @@ class TestReportCard(SchoolTestCase):
 		html = frappe.get_print("Student Term Result", self.result, "Report Card")
 		for text in ("STUDENT REPORT CARD", "Position 1 out of 2", "Next term begins", "_Test Student A"):
 			self.assertIn(text, html)
+		# Same school name as the portal and emails ("Smart School" while Smart School Settings has none)
+		self.assertIn(f'<div class="rc-school-name">{get_school_branding().name}</div>', html)
 		self.assertTrue(report_card.render_pdf(self.result).startswith(b"%PDF"))
 
 	def test_class_printing_headmaster_only(self):

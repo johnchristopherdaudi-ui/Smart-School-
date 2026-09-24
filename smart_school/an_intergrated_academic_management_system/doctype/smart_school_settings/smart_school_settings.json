@@ -134,7 +134,8 @@
   {
    "fieldname": "school_logo",
    "fieldtype": "Attach Image",
-   "label": "Logo"
+   "label": "Logo",
+   "make_attachment_public": 1
   },
   {
    "fieldname": "school_column_break",
@@ -162,7 +163,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-24 17:00:00.000000",
+ "modified": "2026-09-24 23:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Smart School Settings",

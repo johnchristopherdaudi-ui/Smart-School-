@@ -3,6 +3,7 @@
 import frappe
 from frappe.utils import flt, formatdate, getdate
 
+from smart_school.branding import get_school_branding
 from smart_school.results import (
 	BEST_SUBJECTS,
 	INCOMPLETE,
@@ -21,7 +22,6 @@ def get_report_card_data(term_result):
 	doc = frappe.get_doc("Student Term Result", term_result) if isinstance(term_result, str) else term_result
 	student = frappe.get_doc("Student", doc.student)
 	term = frappe.get_doc("Term", doc.term)
-	settings = frappe.get_cached_doc("Smart School Settings")
 
 	exams = frappe.get_all(
 		"Exam",
@@ -69,7 +69,7 @@ def get_report_card_data(term_result):
 	)
 
 	return frappe._dict(
-		school=settings,
+		school=get_school_branding(),
 		student=student,
 		term=term,
 		result=doc,

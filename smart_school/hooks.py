@@ -76,7 +76,10 @@ role_home_page = {
 
 # add methods and filters to jinja environment
 jinja = {
-	"methods": ["smart_school.report_card.get_report_card_data"],
+	"methods": [
+		"smart_school.report_card.get_report_card_data",
+		"smart_school.branding.get_school_branding",
+	],
 }
 
 # Staff land on their role's workspace after login
