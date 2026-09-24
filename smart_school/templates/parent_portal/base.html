@@ -11,10 +11,10 @@
     --sp-text: #22333b;
 }
 body { background: var(--sp-bg); }
-.sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.sp-navbar { background: var(--sp-primary); padding: 14px 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 .sp-brand { color: #fff; font-size: 22px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; }
 .sp-brand span.sp-logo { background: var(--sp-accent); color: var(--sp-primary); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
-.sp-nav-links { display: flex; align-items: center; }
+.sp-nav-links { display: flex; align-items: center; margin-left: auto; }
 .sp-nav-links a { color: #dfe7f0; margin-left: 22px; text-decoration: none; font-weight: 500; font-size: 15px; }
 .sp-nav-links a:hover { color: var(--sp-accent); }
 .sp-bell-wrap { position: relative; margin-left: 22px; }
@@ -30,28 +30,53 @@ body { background: var(--sp-bg); }
 .sp-notif-dropdown {
     display: none; position: absolute; top: 30px; right: 0;
     background: #fff; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    width: 280px; max-height: 320px; overflow-y: auto; z-index: 100;
+    width: 280px; max-width: calc(100vw - 24px); max-height: 320px; overflow-y: auto; z-index: 100;
 }
 .sp-notif-dropdown.show { display: block; }
 .sp-notif-item { display: block; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; color: var(--sp-text); font-size: 13px; text-decoration: none; }
 .sp-notif-item:hover { background: #f7f9fc; }
 .sp-notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+.sp-nav-actions { display: flex; align-items: center; }
+.sp-menu-toggle { display: none; background: none; border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 6px; font-size: 18px; line-height: 1; padding: 6px 10px; margin-left: 16px; cursor: pointer; }
+.sp-page { min-width: 0; overflow-wrap: break-word; }
+.sp-page img, .sp-page canvas { max-width: 100%; }
+.sp-page .sp-table-wrap, .sp-page .sp-term-card { overflow-x: auto; }
+@media (max-width: 767px) {
+    .sp-navbar { padding: 10px 14px; }
+    .sp-brand { font-size: 18px; }
+    .sp-nav-actions { margin-left: auto; }
+    .sp-bell-wrap { margin-left: 0; }
+    .sp-menu-toggle { display: block; }
+    .sp-nav-links { display: none; order: 3; flex-basis: 100%; flex-direction: column; align-items: stretch; margin-left: 0; padding-top: 6px; }
+    .sp-nav-links.show { display: flex; }
+    .sp-nav-links a { margin-left: 0; padding: 10px 4px; border-top: 1px solid rgba(255,255,255,0.12); }
+    .sp-page .sp-container { padding: 20px 12px; }
+    .sp-page .sp-welcome { font-size: 20px; }
+}
 </style>
 {% block portal_style %}{% endblock %}
 {% endblock %}
 
-{% block page_content %}
+{#- The portal has its own navbar; Frappe's website navbar would be a second one -#}
+{% block navbar %}{% endblock %}
+
+{#- Full-width layout instead of Bootstrap's .container, so the portal fits phone screens -#}
+{% block content %}
+<div class="sp-page">
 <nav class="sp-navbar">
     <a href="/parent-portal" class="sp-brand"><span class="sp-logo">SS</span> Smart School</a>
     {% if not hide_portal_nav %}
-    <div class="sp-nav-links">
+    <div class="sp-nav-links" id="portalMenu">
         <a href="/parent-portal">Dashboard</a>
         <a href="/parent-portal/results">Matokeo</a>
         <a href="/parent-portal/fees">Ada</a>
         <a href="/parent-portal/announcements">Matangazo</a>
         <a href="/parent-portal/discipline">Nidhamu</a>
+        <a href="/api/method/logout">Toka</a>
+    </div>
+    <div class="sp-nav-actions">
         <span class="sp-bell-wrap">
-            <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)">🔔</a>
+            <a href="javascript:void(0)" class="sp-bell" onclick="toggleNotifDropdown(event)" aria-label="Arifa">🔔</a>
             {% if unseen_count and unseen_count > 0 %}
             <span class="sp-bell-badge">{{ unseen_count | e }}</span>
             {% endif %}
@@ -65,12 +90,14 @@ body { background: var(--sp-bg); }
                 {% endif %}
             </div>
         </span>
-        <a href="/api/method/logout">Toka</a>
+        <button type="button" class="sp-menu-toggle" id="portalMenuToggle" aria-label="Menyu" aria-controls="portalMenu"
+            aria-expanded="false" onclick="togglePortalMenu(event)">&#9776;</button>
     </div>
     {% endif %}
 </nav>
 
 {% block portal_content %}{% endblock %}
+</div>
 
 {% if not hide_portal_nav %}
 <script>
@@ -78,6 +105,11 @@ function toggleNotifDropdown(e) {
     e.stopPropagation();
     document.getElementById('notifDropdown').classList.toggle('show');
     frappe.call({ method: 'smart_school.portal_utils.mark_announcements_seen' });
+}
+function togglePortalMenu(e) {
+    e.stopPropagation();
+    var open = document.getElementById('portalMenu').classList.toggle('show');
+    document.getElementById('portalMenuToggle').setAttribute('aria-expanded', open);
 }
 document.addEventListener('click', function() {
     var dropdown = document.getElementById('notifDropdown');
