@@ -9,6 +9,7 @@
   "date",
   "incident_type",
   "severity",
+  "description",
   "action_taken"
  ],
  "fields": [
@@ -16,33 +17,44 @@
    "fieldname": "student",
    "fieldtype": "Link",
    "label": "Student",
-   "options": "Student"
+   "options": "Student",
+   "reqd": 1
   },
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "reqd": 1
   },
   {
    "fieldname": "incident_type",
-   "fieldtype": "Data",
-   "label": "Incident Type"
+   "fieldtype": "Select",
+   "label": "Incident Type",
+   "options": "\nFighting\nBullying\nTruancy\nLateness\nDisrespect to Staff\nExam Malpractice\nProperty Damage\nTheft\nUniform Violation\nProhibited Items\nOther",
+   "reqd": 1
   },
   {
    "fieldname": "severity",
-   "fieldtype": "Data",
-   "label": "Severity"
+   "fieldtype": "Select",
+   "label": "Severity",
+   "options": "\nMinor\nModerate\nSerious",
+   "reqd": 1
   },
   {
    "fieldname": "action_taken",
    "fieldtype": "Data",
    "label": "Action Taken"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:27:04.720770",
+ "modified": "2026-09-24 14:30:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Discipline Record",

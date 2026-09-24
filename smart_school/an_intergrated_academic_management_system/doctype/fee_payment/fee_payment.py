@@ -1,12 +1,15 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
-from smart_school.fees import get_class_for_term
+from smart_school.fees import get_class_for_term, get_fee_statement
 from smart_school.notifications import send_notification
 
 
 class FeePayment(Document):
     def validate(self):
+        if flt(self.amount_paid) <= 0:
+            frappe.throw("Kiasi kilicholipwa lazima kiwe zaidi ya 0")
+
         self.set_amount_due()
         self.set_receipt_number()
         self.set_status_and_balance()
@@ -37,40 +40,27 @@ class FeePayment(Document):
             self.receipt_number = self.name
 
     def set_status_and_balance(self):
-        amount_due = self.amount_due or 0
+        """Snapshot at the time of this payment, from the fee statement: submitted payments of this
+        term plus credit carried forward from earlier terms."""
+        row = next((r for r in get_fee_statement(self.student).rows if r.term == self.term), None)
+        outstanding_before = row.remaining if row else flt(self.amount_due)
+        paid_before = (row.total_paid + row.credit_applied) if row else 0
 
-        all_payments = frappe.get_all(
-            "Fee Payment",
-            filters={
-                "student": self.student,
-                "term": self.term,
-                "name": ["!=", self.name]
-            },
-            fields=["amount_paid"]
-        )
+        self.balance = max(outstanding_before - flt(self.amount_paid), 0)
+        self.overpayment = max(flt(self.amount_paid) - outstanding_before, 0) if self.amount_due else 0
 
-        total_paid_before = sum([p.amount_paid or 0 for p in all_payments])
-        total_paid_including_this = total_paid_before + (self.amount_paid or 0)
-
-        difference = amount_due - total_paid_including_this
-
-        if difference > 0:
-            self.balance = difference
-            self.overpayment = 0
-        else:
-            self.balance = 0
-            self.overpayment = abs(difference)
-
+        total_paid_including_this = paid_before + flt(self.amount_paid)
         if total_paid_including_this <= 0:
             self.status = "Unpaid"
-        elif total_paid_including_this >= amount_due:
+        elif total_paid_including_this >= flt(self.amount_due):
             self.status = "Paid"
         else:
             self.status = "Partial"
 
-    def after_insert(self):
-        # Only a new payment is news for the guardian; later edits must not re-send it
-        self.notify_guardian()
+    def on_submit(self):
+        # Once per payment: not for payments submitted by a data patch, nor for an amended copy
+        if not frappe.flags.in_patch and not self.amended_from:
+            self.notify_guardian()
 
     def notify_guardian(self):
         message = f"Malipo ya {flt(self.amount_paid):,.0f} TZS yamepokelewa. Salio la muhula huu: {flt(self.balance):,.0f} TZS."

@@ -16,24 +16,29 @@
    "fieldname": "student",
    "fieldtype": "Link",
    "label": "Student",
-   "options": "Student"
+   "options": "Student",
+   "reqd": 1
   },
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "reqd": 1
   },
   {
+   "fetch_from": "student.current_class",
    "fieldname": "class",
    "fieldtype": "Link",
    "label": "Class",
-   "options": "Class"
+   "options": "Class",
+   "read_only": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Present\nAbsent"
+   "options": "\nPresent\nAbsent\nLate\nExcused",
+   "reqd": 1
   },
   {
    "fieldname": "term",
@@ -46,7 +51,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 12:40:05.000000",
+ "modified": "2026-09-24 14:30:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Attendance",

@@ -7,6 +7,10 @@ from frappe.model.document import Document
 
 class ClassSubjectMapping(Document):
     def validate(self):
+        if self.subject_scope == "All Combinations":
+            self.combination = None
+        elif not self.combination:
+            frappe.throw("Combination is required when the scope is Specific Combination")
         self.check_duplicate()
 
     def check_duplicate(self):

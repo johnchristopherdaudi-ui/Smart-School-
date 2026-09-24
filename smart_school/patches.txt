@@ -14,3 +14,5 @@ smart_school.patches.seed_grading_tables
 smart_school.patches.rename_announcement_title
 smart_school.patches.set_exam_defaults_and_publish_existing
 smart_school.patches.recompute_exam_and_term_results
+smart_school.patches.migrate_discipline_records
+smart_school.patches.submit_existing_fee_payments

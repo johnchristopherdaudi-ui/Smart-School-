@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "RCPT-.YYYY.-.#####",
  "creation": "2026-09-09 14:12:15.018649",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -15,7 +16,8 @@
   "column_break_4bm7",
   "receipt_number",
   "balance",
-  "overpayment"
+  "overpayment",
+  "amended_from"
  ],
  "fields": [
   {
@@ -36,9 +38,10 @@
   },
   {
    "fieldname": "amount_paid",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Amount Paid",
+   "non_negative": 1,
    "reqd": 1
   },
   {
@@ -52,7 +55,7 @@
    "fieldname": "payment_method",
    "fieldtype": "Select",
    "label": "Payment Method",
-   "options": "Mobile Money\nBank Transfer",
+   "options": "Mobile Money\nBank Transfer\nCash",
    "reqd": 1
   },
   {
@@ -90,18 +93,32 @@
    "fieldtype": "Link",
    "label": "Class",
    "options": "Class"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fee Payment",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-09-23 18:00:00.000000",
+ "modified": "2026-09-24 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Fee Payment",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -111,9 +128,12 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "email": 1,
    "export": 1,
@@ -122,6 +142,7 @@
    "report": 1,
    "role": "Accountant",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {

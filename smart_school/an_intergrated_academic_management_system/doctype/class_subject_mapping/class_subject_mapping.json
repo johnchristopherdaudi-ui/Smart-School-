@@ -36,16 +36,18 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.subject_scope==\"Specific Combination\"",
    "fieldname": "combination",
    "fieldtype": "Link",
    "label": "Combination",
+   "mandatory_depends_on": "eval:doc.subject_scope==\"Specific Combination\"",
    "options": "Combination"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-18 09:32:33.287839",
+ "modified": "2026-09-24 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Class Subject Mapping",

@@ -268,6 +268,7 @@ def confirm_demo_payment(reference, success):
         fee_payment.payment_method = "Mobile Money"
         fee_payment.receipt_number = log.transaction_reference
         fee_payment.insert(ignore_permissions=True)
+        fee_payment.submit()
 
         log.fee_payment = fee_payment.name
         log.save(ignore_permissions=True)

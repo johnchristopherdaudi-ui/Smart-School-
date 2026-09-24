@@ -9,7 +9,8 @@ def get_fee_statement(student):
     Each term is priced with the Fee Structure of the class the student was in that term:
     the class recorded on that term's Fee Payments, else the Student Academic Record of that
     academic year, else the current class (current academic year and upcoming terms only).
-    Only terms that have started count as debt; upcoming terms are listed so parents can pay early."""
+    Only terms that have started count as debt; upcoming terms are listed so parents can pay early.
+    An overpayment reduces the next term's debt; whatever is left after the last term is `credit`."""
     student_doc = frappe.get_cached_doc("Student", student)
     today_date = getdate(today())
 
@@ -32,12 +33,16 @@ def get_fee_statement(student):
     )
 
     paid, paid_classes = {}, {}
-    for p in frappe.get_all("Fee Payment", filters={"student": student}, fields=["term", "amount_paid", "class"]):
+    # Only submitted payments count: drafts are not money received yet, cancelled ones were reversed
+    for p in frappe.get_all(
+        "Fee Payment", filters={"student": student, "docstatus": 1}, fields=["term", "amount_paid", "class"]
+    ):
         paid[p.term] = paid.get(p.term, 0) + flt(p.amount_paid)
         if p["class"]:
             paid_classes.setdefault(p.term, p["class"])
 
     rows = []
+    credit = 0  # overpayment carried forward from earlier terms
     for term in terms:
         is_due = term.is_due
         student_class = paid_classes.get(term.name) or record_classes.get(term.academic_year)
@@ -50,6 +55,11 @@ def get_fee_statement(student):
             continue
 
         amount_due = amount_due or 0
+        credit_applied = min(credit, max(amount_due - total_paid, 0))
+        credit -= credit_applied
+        # Carry an overpayment forward only when the term's fee is known
+        overpaid = max(total_paid - amount_due, 0) if amount_due else 0
+        credit += overpaid
         rows.append(frappe._dict(
             term=term.name,
             term_name=term.term_name,
@@ -58,8 +68,9 @@ def get_fee_statement(student):
             is_due=is_due,
             amount_due=amount_due,
             total_paid=total_paid,
-            remaining=max(amount_due - total_paid, 0),
-            overpaid=max(total_paid - amount_due, 0) if amount_due else 0,
+            credit_applied=credit_applied,
+            remaining=max(amount_due - total_paid - credit_applied, 0),
+            overpaid=overpaid,
         ))
 
     return frappe._dict(
@@ -67,6 +78,7 @@ def get_fee_statement(student):
         student_name=student_doc.full_name,
         rows=rows,
         balance=sum(r.remaining for r in rows if r.is_due),
+        credit=credit,
     )
 
 

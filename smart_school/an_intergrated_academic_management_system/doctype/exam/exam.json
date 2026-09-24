@@ -32,11 +32,13 @@
    "reqd": 1
   },
   {
+   "fetch_from": "term.academic_year",
    "fieldname": "academic_year",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Academic Year",
    "options": "Academic Year",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -80,7 +82,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-24 13:00:00.000000",
+ "modified": "2026-09-24 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Exam",

@@ -21,8 +21,18 @@ class ExamResult(Document):
         return next((t for t in assigned if frappe.db.exists("Teacher", t)), None)
 
     def validate(self):
+        self.check_student_class()
         self.check_duplicate()
         self.set_percentage_and_grade()
+
+    def check_student_class(self):
+        # The class the student was in during the exam's academic year, so results stay valid after promotion
+        exam_class, academic_year = frappe.get_cached_value("Exam", self.exam, ["class", "academic_year"])
+        student_class = frappe.db.get_value(
+            "Student Academic Record", {"student": self.student, "academic_year": academic_year}, "class"
+        ) or frappe.get_cached_value("Student", self.student, "current_class")
+        if student_class != exam_class:
+            frappe.throw(f"{self.student} was in {student_class}, but this exam is for {exam_class}")
 
     def check_duplicate(self):
         # Cancelled results do not count, so a cancelled result can be amended

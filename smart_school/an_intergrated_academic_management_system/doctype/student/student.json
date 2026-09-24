@@ -67,7 +67,8 @@
   {
    "fieldname": "risk_score",
    "fieldtype": "Float",
-   "label": "Risk Score"
+   "label": "Risk Score",
+   "read_only": 1
   },
   {
    "fieldname": "combination",
@@ -92,7 +93,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-23 14:00:00.000000",
+ "modified": "2026-09-24 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student",

@@ -79,3 +79,4 @@ def create_fee_payment_from_gateway(student, amount, term, reference):
         "receipt_number": reference
     })
     fee_payment.insert(ignore_permissions=True)
+    fee_payment.submit()

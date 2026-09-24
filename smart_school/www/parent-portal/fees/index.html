@@ -111,6 +111,9 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
         <div>
             <div class="label">Jumla ya Deni Lililobaki - {{ selected_student.full_name | e }}</div>
             <div class="amount">{{ "{:,.0f}".format(current_balance) }} TZS</div>
+            {% if credit > 0 %}
+            <div class="label">Salio la ziada: <b>{{ "{:,.0f}".format(credit) }} TZS</b> (litapunguza ada ya muhula unaofuata)</div>
+            {% endif %}
         </div>
     </div>
 
@@ -122,6 +125,7 @@ table.sp-table td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
             <div class="amounts">
                 Deni: <b>{{ "{:,.0f}".format(s.amount_due) }}</b> &middot;
                 Amelipa: <b>{{ "{:,.0f}".format(s.total_paid) }}</b>
+                {% if s.credit_applied %} &middot; Ziada kutoka muhula uliopita: <b>{{ "{:,.0f}".format(s.credit_applied) }}</b>{% endif %}
                 {% if s.overpaid %} &middot; Ziada: <b>{{ "{:,.0f}".format(s.overpaid) }}</b>{% endif %}
             </div>
             {% if s.remaining > 0 %}

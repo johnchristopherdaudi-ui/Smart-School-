@@ -17,7 +17,7 @@ def get_context(context):
     # Historia kamili ya malipo (kwa kuonekana tu, si kwa mahesabu ya balance)
     payments = frappe.get_all(
         "Fee Payment",
-        filters={"student": selected_student.name},
+        filters={"student": selected_student.name, "docstatus": 1},
         fields=["name", "term", "amount_paid", "payment_date", "payment_method", "status", "receipt_number"],
         order_by="payment_date desc, creation desc"
     )
@@ -34,6 +34,7 @@ def get_context(context):
     context.summary_list = [r for r in statement.rows if r.is_due]
     context.upcoming_list = [r for r in statement.rows if not r.is_due]
     context.current_balance = statement.balance
+    context.credit = statement.credit
     context.payments_enabled = demo_payments_enabled()
     notif_data = get_notifications(guardian, children)
     context.notifications = notif_data["items"]

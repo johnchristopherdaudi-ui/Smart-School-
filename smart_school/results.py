@@ -136,6 +136,13 @@ def publish_exam_results(exam):
     if doc.results_published:
         frappe.throw("Results for this exam are already published")
 
+    weights = frappe.get_all("Exam", filters={"class": doc.get("class"), "term": doc.term}, pluck="weight")
+    if any(weights) and flt(sum(flt(w) for w in weights), 2) != 100:
+        frappe.throw(
+            f"Weights of {doc.get('class')} exams in {doc.term} add up to {sum(flt(w) for w in weights):g}; "
+            "they must add up to 100 before results are published"
+        )
+
     doc.db_set({"results_published": 1, "published_on": now_datetime()})
     frappe.enqueue("smart_school.results.notify_published_exam", exam=exam, enqueue_after_commit=True)
 

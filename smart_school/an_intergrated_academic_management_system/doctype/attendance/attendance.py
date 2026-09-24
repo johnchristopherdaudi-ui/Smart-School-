@@ -4,7 +4,17 @@ from frappe.model.document import Document
 
 class Attendance(Document):
     def validate(self):
+        self.check_duplicate()
+        if not self.get("class"):
+            self.set("class", frappe.get_cached_value("Student", self.student, "current_class"))
         self.set_term()
+
+    def check_duplicate(self):
+        other = frappe.db.get_value(
+            "Attendance", {"student": self.student, "date": self.date, "name": ["!=", self.name]}, "name"
+        )
+        if other:
+            frappe.throw(f"Attendance for {self.student} on {self.date} already exists ({other})")
 
     def set_term(self):
         if not self.date:
