@@ -1,9 +1,9 @@
 [project]
 name = "smart_school"
 authors = [
-    { name = "john daudi", email = "johnchristopherdaudi@gmail.com"}
+    { name = "John Christopher Daudi", email = "johnchristopherdaudi@gmail.com" }
 ]
-description = "web development "
+description = "Integrated academic management system for Tanzanian secondary schools"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

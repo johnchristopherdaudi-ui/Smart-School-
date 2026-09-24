@@ -1,7 +1,7 @@
 app_name = "smart_school"
-app_title = "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM"
-app_publisher = "john daudi"
-app_description = "web development "
+app_title = "Smart School - An Integrated Academic Management System"
+app_publisher = "John Christopher Daudi"
+app_description = "Integrated academic management system for Tanzanian secondary schools"
 app_email = "johnchristopherdaudi@gmail.com"
 app_license = "mit"
 
@@ -15,7 +15,7 @@ app_license = "mit"
 # 	{
 # 		"name": "smart_school",
 # 		"logo": "/assets/smart_school/logo.png",
-# 		"title": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+# 		"title": "Smart School",
 # 		"route": "/smart_school",
 # 		"has_permission": "smart_school.api.permission.has_app_permission"
 # 	}
@@ -86,7 +86,7 @@ on_session_creation = ["smart_school.users.set_default_workspace"]
 # ------------
 
 # before_install = "smart_school.install.before_install"
-# after_install = "smart_school.install.after_install"
+after_install = "smart_school.install.after_install"
 
 # Uninstallation
 # ------------
