@@ -3,6 +3,7 @@ from frappe.model.document import Document
 from frappe.utils import flt
 
 from smart_school.api import get_current_teacher
+from smart_school.marks_alerts import note_change_after_publish
 from smart_school.results import get_grade, recompute_student_term_result, round_half_up
 
 
@@ -60,9 +61,11 @@ class ExamResult(Document):
 
 	def on_submit(self):
 		self.update_student_term_result()
+		note_change_after_publish(self, "submitted")
 
 	def on_cancel(self):
 		self.update_student_term_result()
+		note_change_after_publish(self, "cancelled")
 
 	def update_student_term_result(self):
 		recompute_student_term_result(self.student, frappe.get_cached_value("Exam", self.exam, "term"))

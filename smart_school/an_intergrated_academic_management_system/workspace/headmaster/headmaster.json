@@ -13,7 +13,7 @@
    "label": "Fee Collection by Term"
   }
  ],
- "content": "[{\"id\": \"34bf03f845\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Headmaster</b></span>\", \"col\": 12}}, {\"id\": \"267bd455b4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Active Students\", \"col\": 3}}, {\"id\": \"0a625fa213\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"High Risk Students\", \"col\": 3}}, {\"id\": \"c3105bef3f\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Fees Collected This Term\", \"col\": 3}}, {\"id\": \"34fc406837\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Outstanding Fees\", \"col\": 3}}, {\"id\": \"68bb053731\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Division Distribution\", \"col\": 6}}, {\"id\": \"69005b94a4\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Absence Rate by Class\", \"col\": 6}}, {\"id\": \"fad1deaa3f\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Fee Collection by Term\", \"col\": 6}}, {\"id\": \"395e4fe776\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Shortcuts</b></span>\", \"col\": 12}}, {\"id\": \"471f015517\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Exams to publish\", \"col\": 3}}, {\"id\": \"8a04f85a5d\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pending admissions\", \"col\": 3}}, {\"id\": \"e8a55607a8\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Comments za HM zinazosubiri\", \"col\": 3}}, {\"id\": \"b4fe91b87e\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Students\", \"col\": 3}}, {\"id\": \"02ac5f675e\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Term Results\", \"col\": 3}}, {\"id\": \"14339c2c52\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Promotion Tool\", \"col\": 3}}, {\"id\": \"bb3ecb36c6\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Announcements\", \"col\": 3}}, {\"id\": \"159bcfd74f\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Teachers\", \"col\": 3}}, {\"id\": \"1ee2953354\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports &amp; Masters</b></span>\", \"col\": 12}}, {\"id\": \"dbd1c117db\", \"type\": \"card\", \"data\": {\"card_name\": \"Academic Reports\", \"col\": 4}}, {\"id\": \"5f18b67f27\", \"type\": \"card\", \"data\": {\"card_name\": \"Finance\", \"col\": 4}}, {\"id\": \"b3723fb572\", \"type\": \"card\", \"data\": {\"card_name\": \"People\", \"col\": 4}}]",
+ "content": "[{\"id\": \"34bf03f845\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Headmaster</b></span>\", \"col\": 12}}, {\"id\": \"267bd455b4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Active Students\", \"col\": 4}}, {\"id\": \"0a625fa213\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"High Risk Students\", \"col\": 4}}, {\"id\": \"7c1e5a9d42\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Marks Alerts\", \"col\": 4}}, {\"id\": \"c3105bef3f\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Fees Collected This Term\", \"col\": 6}}, {\"id\": \"34fc406837\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Outstanding Fees\", \"col\": 6}}, {\"id\": \"68bb053731\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Division Distribution\", \"col\": 6}}, {\"id\": \"69005b94a4\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Absence Rate by Class\", \"col\": 6}}, {\"id\": \"fad1deaa3f\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Fee Collection by Term\", \"col\": 6}}, {\"id\": \"395e4fe776\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Shortcuts</b></span>\", \"col\": 12}}, {\"id\": \"471f015517\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Exams to publish\", \"col\": 3}}, {\"id\": \"8a04f85a5d\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pending admissions\", \"col\": 3}}, {\"id\": \"e8a55607a8\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Comments za HM zinazosubiri\", \"col\": 3}}, {\"id\": \"b4fe91b87e\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Students\", \"col\": 3}}, {\"id\": \"02ac5f675e\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Term Results\", \"col\": 3}}, {\"id\": \"14339c2c52\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Promotion Tool\", \"col\": 3}}, {\"id\": \"bb3ecb36c6\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Announcements\", \"col\": 3}}, {\"id\": \"159bcfd74f\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Teachers\", \"col\": 3}}, {\"id\": \"1ee2953354\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Reports &amp; Masters</b></span>\", \"col\": 12}}, {\"id\": \"dbd1c117db\", \"type\": \"card\", \"data\": {\"card_name\": \"Academic Reports\", \"col\": 4}}, {\"id\": \"5f18b67f27\", \"type\": \"card\", \"data\": {\"card_name\": \"Finance\", \"col\": 4}}, {\"id\": \"b3723fb572\", \"type\": \"card\", \"data\": {\"card_name\": \"People\", \"col\": 4}}]",
  "creation": "2026-09-24 18:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -29,7 +29,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Academic Reports",
-   "link_count": 5,
+   "link_count": 6,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -85,6 +85,17 @@
    "link_count": 0,
    "link_to": "At-Risk Students",
    "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Marks Alerts",
+   "link_count": 0,
+   "link_to": "Marks Alert",
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
@@ -182,7 +193,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-09-24 18:00:00.000000",
+ "modified": "2026-09-25 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Headmaster",
@@ -194,6 +205,10 @@
   {
    "label": "High Risk Students",
    "number_card_name": "High Risk Students"
+  },
+  {
+   "label": "Marks Alerts",
+   "number_card_name": "Marks Alerts"
   },
   {
    "label": "Fees Collected This Term",

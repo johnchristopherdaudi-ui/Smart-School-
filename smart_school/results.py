@@ -1,7 +1,7 @@
 from decimal import ROUND_HALF_UP, Decimal
 
 import frappe
-from frappe.utils import flt, now_datetime
+from frappe.utils import flt, get_fullname, now_datetime
 
 BEST_SUBJECTS = 7
 INCOMPLETE = "Incomplete"
@@ -153,14 +153,36 @@ def publish_exam_results(exam):
 			"they must add up to 100 before results are published"
 		)
 
-	doc.db_set({"results_published": 1, "published_on": now_datetime()})
+	from smart_school.marks_alerts import checks_before_publish
+
+	# A warning, never a block: publishing goes ahead, the open alerts are noted on the exam
+	open_alerts = checks_before_publish(exam)
+	now = now_datetime()
+	# first_published_on is never cleared: changes after it stay flagged even after unpublishing
+	doc.db_set(
+		{"results_published": 1, "published_on": now, "first_published_on": doc.first_published_on or now}
+	)
+	if open_alerts:
+		doc.add_comment(
+			"Info",
+			f"Published with {open_alerts} open marks alert{'s' if open_alerts != 1 else ''} "
+			f"by {get_fullname(frappe.session.user)}",
+		)
 	frappe.enqueue("smart_school.results.notify_published_exam", exam=exam, enqueue_after_commit=True)
 
 
 @frappe.whitelist()
 def unpublish_exam_results(exam):
 	frappe.only_for(PUBLISHER_ROLES)
-	frappe.get_doc("Exam", exam).db_set({"results_published": 0, "published_on": None})
+	from smart_school.marks_alerts import note_unpublished
+
+	doc = frappe.get_doc("Exam", exam)
+	if not doc.results_published:
+		frappe.throw("Results for this exam are not published")
+	published_on = doc.published_on
+	doc.db_set({"results_published": 0, "published_on": None})
+	doc.add_comment("Info", f"Results unpublished by {get_fullname(frappe.session.user)}")
+	note_unpublished(doc, published_on)
 
 
 def notify_published_exam(exam):

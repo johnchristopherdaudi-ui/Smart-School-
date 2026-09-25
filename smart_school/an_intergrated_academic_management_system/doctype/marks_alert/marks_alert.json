@@ -1,0 +1,234 @@
+{
+ "actions": [],
+ "autoname": "MA-.YYYY.-.#####",
+ "creation": "2026-09-25 10:00:00.000000",
+ "description": "Marks that may need a second look. Alerts are created by the marks checks and never block anything.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "alert_type",
+  "severity",
+  "status",
+  "column_break_main",
+  "exam",
+  "subject",
+  "class",
+  "term",
+  "student",
+  "student_name",
+  "exam_result",
+  "related_user",
+  "details_section",
+  "message",
+  "evidence",
+  "review_section",
+  "reviewer",
+  "reviewed_on",
+  "column_break_review",
+  "review_note",
+  "alert_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "alert_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Alert Type",
+   "options": "Many Identical Marks\nMany Zero Marks\nVery Low Spread\nMany Round Numbers\nUnusual Class Average\nUnusual Student Change\nChanged After Publish\nEntered By Unassigned User\nResults Unpublished",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "severity",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Severity",
+   "options": "Low\nMedium\nHigh",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "Open",
+   "description": "Auto-resolved is set only by the checks, and only for statistical alerts",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nReviewed-OK\nCorrected\nAuto-resolved",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "exam",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Exam",
+   "options": "Exam",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Subject",
+   "options": "Subject",
+   "read_only": 1
+  },
+  {
+   "fieldname": "class",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Class",
+   "options": "Class",
+   "read_only": 1
+  },
+  {
+   "fieldname": "term",
+   "fieldtype": "Link",
+   "label": "Term",
+   "options": "Term",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "student.full_name",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "exam_result",
+   "fieldtype": "Link",
+   "label": "Exam Result",
+   "options": "Exam Result",
+   "read_only": 1
+  },
+  {
+   "fieldname": "related_user",
+   "fieldtype": "Link",
+   "label": "Entered or Changed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "label": "Message",
+   "read_only": 1
+  },
+  {
+   "description": "The numbers the check used",
+   "fieldname": "evidence",
+   "fieldtype": "Code",
+   "label": "Evidence",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_section",
+   "fieldtype": "Section Break",
+   "label": "Review"
+  },
+  {
+   "fieldname": "reviewer",
+   "fieldtype": "Link",
+   "label": "Reviewer",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewed_on",
+   "fieldtype": "Datetime",
+   "label": "Reviewed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_review",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "review_note",
+   "fieldtype": "Small Text",
+   "label": "Review Note"
+  },
+  {
+   "fieldname": "alert_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Alert Key",
+   "length": 255,
+   "no_copy": 1,
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-25 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Marks Alert",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Headmaster",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

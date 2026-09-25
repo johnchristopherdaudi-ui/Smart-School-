@@ -24,7 +24,19 @@
   "risk_average_threshold",
   "risk_levels_section",
   "risk_medium_from",
-  "risk_high_from"
+  "risk_high_from",
+  "marks_alerts_section",
+  "enable_marks_alerts",
+  "alert_min_class_size",
+  "alert_identical_share",
+  "alert_zero_share",
+  "alert_round_share",
+  "alert_min_std",
+  "marks_alerts_column_break",
+  "alert_history_min_exams",
+  "alert_class_z",
+  "alert_student_z",
+  "alert_student_min_jump"
  ],
  "fields": [
   {
@@ -157,13 +169,100 @@
    "fieldtype": "Data",
    "label": "Email",
    "options": "Email"
+  },
+  {
+   "collapsible": 1,
+   "description": "Marks that may need a second look. Alerts are a warning only: they never block saving or publishing.",
+   "fieldname": "marks_alerts_section",
+   "fieldtype": "Section Break",
+   "label": "Marks Alerts"
+  },
+  {
+   "default": "1",
+   "description": "Turns the statistical checks on or off. Integrity checks (changes after publishing, entries by unassigned users, unpublishing) always run.",
+   "fieldname": "enable_marks_alerts",
+   "fieldtype": "Check",
+   "label": "Enable Statistical Checks"
+  },
+  {
+   "default": "10",
+   "description": "Class checks skip a subject with fewer submitted marks than this",
+   "fieldname": "alert_min_class_size",
+   "fieldtype": "Int",
+   "label": "Minimum Class Size",
+   "non_negative": 1
+  },
+  {
+   "default": "40",
+   "description": "Share of the class with exactly the same mark (0 and full marks not counted)",
+   "fieldname": "alert_identical_share",
+   "fieldtype": "Percent",
+   "label": "Identical Marks From (%)"
+  },
+  {
+   "default": "20",
+   "description": "Share of the class with 0",
+   "fieldname": "alert_zero_share",
+   "fieldtype": "Percent",
+   "label": "Zero Marks From (%)"
+  },
+  {
+   "default": "80",
+   "description": "Share of raw marks that are multiples of 5 (0 and full marks not counted); about 20% is normal",
+   "fieldname": "alert_round_share",
+   "fieldtype": "Percent",
+   "label": "Round Numbers From (%)"
+  },
+  {
+   "default": "3",
+   "description": "Standard deviation of the percentages below this raises an alert; 0 turns the check off",
+   "fieldname": "alert_min_std",
+   "fieldtype": "Float",
+   "label": "Minimum Spread (percentage points)",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "marks_alerts_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "4",
+   "description": "Earlier exams of the subject at the same Form needed before the class average is compared",
+   "fieldname": "alert_history_min_exams",
+   "fieldtype": "Int",
+   "label": "History: Minimum Exams",
+   "non_negative": 1
+  },
+  {
+   "default": "3.5",
+   "description": "Robust z-score (median / MAD) of the class average against its history",
+   "fieldname": "alert_class_z",
+   "fieldtype": "Float",
+   "label": "Class Average: z Above",
+   "non_negative": 1
+  },
+  {
+   "default": "3.5",
+   "description": "Robust z-score of a student's change against the class's median change",
+   "fieldname": "alert_student_z",
+   "fieldtype": "Float",
+   "label": "Student Change: z Above",
+   "non_negative": 1
+  },
+  {
+   "default": "20",
+   "description": "And the student's change differs from the class's by at least this many percentage points",
+   "fieldname": "alert_student_min_jump",
+   "fieldtype": "Float",
+   "label": "Student Change: Minimum Points",
+   "non_negative": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-24 23:00:00.000000",
+ "modified": "2026-09-25 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Smart School Settings",

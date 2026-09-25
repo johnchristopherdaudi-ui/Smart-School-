@@ -13,7 +13,8 @@
   "max_marks",
   "weight",
   "results_published",
-  "published_on"
+  "published_on",
+  "first_published_on"
  ],
  "fields": [
   {
@@ -77,12 +78,21 @@
    "fieldtype": "Datetime",
    "label": "Published On",
    "read_only": 1
+  },
+  {
+   "depends_on": "first_published_on",
+   "description": "Kept when results are unpublished: marks changed after this are flagged as changes after publishing",
+   "fieldname": "first_published_on",
+   "fieldtype": "Datetime",
+   "label": "First Published On",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-24 14:00:00.000000",
+ "modified": "2026-09-25 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Exam",
