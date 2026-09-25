@@ -57,6 +57,8 @@ def calculate_risk_score(student, term=None, settings=None):
 	settings = settings or frappe.get_cached_doc("Smart School Settings")
 	if not term:
 		return None
+	if frappe.db.get_value("Student", student, "status") != "Active":
+		return None  # students who left get no risk prediction (their history still counts elsewhere)
 
 	parts = {}
 

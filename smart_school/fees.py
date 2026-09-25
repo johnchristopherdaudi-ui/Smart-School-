@@ -10,9 +10,12 @@ def get_fee_statement(student):
 	the class recorded on that term's Fee Payments, else the Student Academic Record of that
 	academic year, else the current class (current academic year and upcoming terms only).
 	Only terms that have started count as debt; upcoming terms are listed so parents can pay early.
+	A student who left (exit_date) is charged only for terms that started before that day: debts from
+	before remain, and money paid for a later term becomes credit.
 	Overpayments pay the oldest outstanding term first; whatever is left after the last term is `credit`."""
 	student_doc = frappe.get_cached_doc("Student", student)
 	today_date = getdate(today())
+	exit_date = student_doc.get("exit_date")
 
 	terms = frappe.get_all(
 		"Term", fields=["name", "term_name", "academic_year", "start_date"], order_by="start_date asc"
@@ -51,7 +54,8 @@ def get_fee_statement(student):
 		if not student_class and (term.academic_year == current_year or not is_due):
 			student_class = student_doc.current_class
 
-		amount_due = fee_amounts.get((student_class, term.name))
+		charged = is_charged(term.start_date, exit_date)
+		amount_due = fee_amounts.get((student_class, term.name)) if charged else None
 		total_paid = paid.get(term.name, 0)
 		if amount_due is None and not total_paid:
 			continue
@@ -66,8 +70,9 @@ def get_fee_statement(student):
 				is_due=is_due,
 				amount_due=amount_due,
 				total_paid=total_paid,
-				# An overpayment counts only when the term's fee is known
-				overpaid=max(total_paid - amount_due, 0) if amount_due else 0,
+				charged=charged,
+				# An overpayment counts only when the term's fee is known (nothing is due after leaving)
+				overpaid=max(total_paid - amount_due, 0) if amount_due or not charged else 0,
 			)
 		)
 
@@ -85,6 +90,11 @@ def get_fee_statement(student):
 		balance=sum(r.remaining for r in rows if r.is_due),
 		credit=credit,
 	)
+
+
+def is_charged(term_start, exit_date):
+	"""A term is charged unless the student left before it started."""
+	return not exit_date or bool(term_start and getdate(term_start) < getdate(exit_date))
 
 
 def get_term_outstanding(student, term):

@@ -32,6 +32,7 @@ SETTINGS = frappe._dict(
 	min_std=3,
 	history_min_exams=4,
 	class_z=3.5,
+	class_min_diff=10,
 	student_z=3.5,
 	student_min_jump=20,
 )
@@ -92,6 +93,13 @@ class TestStatistics(FrappeTestCase):
 		self.assertEqual(ma.check_class_average(70, history[:3], SETTINGS), [])  # too little history
 		self.assertEqual(ma.check_class_average(70, [50] * 6, SETTINGS), [])  # MAD 0
 		self.assertEqual(ma.check_class_average(None, history, SETTINGS), [])
+
+	def test_class_average_needs_a_real_difference(self):
+		# Averages of a few exams can sit very close together: z is huge, but 3 points is not unusual
+		history = [50, 50.2, 49.8, 50.1, 49.9]
+		self.assertGreater(ma.robust_z(53, history), 3.5)
+		self.assertEqual(ma.check_class_average(53, history, SETTINGS), [])
+		self.assertEqual(types(ma.check_class_average(61, history, SETTINGS)), [ma.CLASS_AVERAGE])
 
 	def test_student_change_is_measured_against_the_class(self):
 		variation = [-3, -2, -1, 0, 1, 2, 3, -2, 1, 0, 2]

@@ -12,6 +12,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 from smart_school import demo_data as dd
+from smart_school.fees import get_fee_statement
 from smart_school.tests.factory import SchoolTestCase
 
 AS_OF = date(2025, 12, 20)  # a finished year: every exam sat and published
@@ -199,6 +200,28 @@ class TestDemoWrite(SchoolTestCase):
 			"Marks Alert", filters={"alert_type": "Changed After Publish"}, pluck="related_user"
 		)
 		self.assertIn(self.manifest["headmaster"], changed)  # the Headmaster's own change is flagged too
+
+	def test_students_who_left_have_an_exit_date_and_no_later_fees(self):
+		left = frappe.get_all(
+			"Student",
+			filters={"name": ["in", self.students], "status": ["!=", "Active"]},
+			fields=["name", "exit_date"],
+		)
+		self.assertTrue(left)
+		self.assertTrue(all(s.exit_date and s.exit_date.month == 11 for s in left))  # end of Term 3
+		for s in left:
+			rows = get_fee_statement(s.name).rows
+			self.assertTrue(all(frappe.db.get_value("Term", r.term, "start_date") < s.exit_date for r in rows))
+		self.assertFalse(
+			frappe.db.count("Student", {"name": ["in", self.students], "status": "Active", "exit_date": ["is", "set"]})
+		)
+
+	def test_demo_parent_has_more_than_one_active_child(self):
+		parent = self.manifest["demo_parent"]
+		self.assertTrue(parent)
+		active = frappe.db.count("Student", {"name": ["in", parent["children"]], "status": "Active"})
+		self.assertGreater(active, 1)
+		self.assertIn("Parent", frappe.get_roles(parent["user"]))
 
 	def test_fee_payments_follow_the_app_rules(self):
 		payment = frappe.get_all(

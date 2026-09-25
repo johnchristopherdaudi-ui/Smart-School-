@@ -23,3 +23,5 @@ smart_school.patches.set_staff_default_workspaces
 smart_school.patches.sync_school_branding
 smart_school.patches.set_marks_alert_defaults
 smart_school.patches.set_first_published_on
+smart_school.patches.update_marks_alert_thresholds
+smart_school.patches.set_student_exit_dates

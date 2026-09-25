@@ -551,16 +551,18 @@ HEADMASTER = ("headmaster@" + DOMAIN, "Mr. Joseph Massawe")
 ACCOUNTANT = ("bursar@" + DOMAIN, "Ms. Grace Temba")
 
 
-def generate(seed=42, as_of=None, students_per_form=STUDENTS_PER_FORM, password=None):
-	"""Entry point for bench execute: check the site, build the school, save it and commit."""
+def generate(seed=42, as_of=None, students_per_form=STUDENTS_PER_FORM):
+	"""Entry point for bench execute: check the site, finish the setup wizard, build the school, save it
+	and commit. Passwords are not set: the owner sets them with bench set-password."""
 	assert_demo_site()
 	as_of = getdate(as_of or frappe.utils.today())
 	if as_of > getdate(frappe.utils.today()):
 		frappe.throw("as_of cannot be in the future")
 
 	frappe.flags.mute_emails = True
+	complete_setup_wizard()
 	plan = build_plan(seed, as_of, cint(students_per_form))
-	manifest = write_plan(plan, password)
+	manifest = write_plan(plan)
 	frappe.db.commit()
 
 	path = frappe.get_site_path("private", "demo_data_manifest.json")
@@ -570,11 +572,26 @@ def generate(seed=42, as_of=None, students_per_form=STUDENTS_PER_FORM, password=
 	return manifest
 
 
+def complete_setup_wizard():
+	"""Frappe's own setup wizard, without creating a user (no email is given; it commits). A new site may
+	already count as set up, so the regional settings are applied with Frappe's functions either way."""
+	from frappe.desk.page.setup_wizard.setup_wizard import set_timezone, setup_complete, update_system_settings
+
+	args = frappe._dict(language="English", country="Tanzania", timezone="Africa/Dar_es_Salaam", currency="TZS")
+	log("Setup wizard: Tanzania, TZS, Africa/Dar_es_Salaam, English")
+	frappe.db.set_value("Currency", "TZS", "enabled", 1)
+	if not frappe.is_setup_complete():
+		setup_complete(dict(args))
+	update_system_settings(args)
+	set_timezone(args)
+	frappe.db.set_single_value("System Settings", "setup_complete", 1)
+
+
 def log(message):
 	print(f"[{datetime.now():%H:%M:%S}] {message}", flush=True)
 
 
-def write_plan(plan, password=None):
+def write_plan(plan):
 	"""Save the plan through the app (doc API for people and payments, bulk insert for the large tables)
 	and return the manifest. Does not commit."""
 	ctx = frappe._dict(plan=plan, names=random.Random(f"{plan.seed}-names"))
@@ -587,8 +604,6 @@ def write_plan(plan, password=None):
 		publish_exams(ctx)
 		apply_integrity_plants(ctx)
 		run_daily_jobs(ctx)
-		if password:
-			set_passwords(ctx, password)
 	finally:
 		frappe.set_user("Administrator")
 	return make_manifest(ctx)
@@ -703,6 +718,13 @@ def last_form(plan, student):
 	return max(plan.enrolments[(student["key"], y)] for y in plan.years if y <= year and (student["key"], y) in plan.enrolments)
 
 
+def exit_date(plan, student):
+	"""Students leave at the end of the year: the day Term 3 ends."""
+	if not student["left_after"]:
+		return None
+	return next(t["end"] for t in plan.terms if t["year"] == student["left_after"] and t["number"] == 3)
+
+
 def write_people(ctx):
 	from frappe.model.naming import make_autoname
 
@@ -721,6 +743,7 @@ def write_people(ctx):
 				"current_class": class_name(form),
 				"current_section": f"{class_name(form)} {s['section']}" if s["status"] == "Active" else None,
 				"status": s["status"],
+				"exit_date": exit_date(plan, s),
 			},
 			make_autoname(f"STU-{s['entry_year']}-.#####"),
 		)
@@ -941,14 +964,13 @@ def run_daily_jobs(ctx):
 		marks_alerts.run_exam_checks(exam, settings)
 
 
-def set_passwords(ctx, password):
-	from frappe.utils.password import update_password
-
-	users = [ctx.headmaster, ctx.accountant, *ctx.teacher_users.values()]
-	users += frappe.get_all("Guardian", filters={"user": ["is", "set"]}, pluck="user", order_by="name asc", limit=5)
-	for user in users:
-		update_password(user, password)
-	ctx.logins = users
+def get_demo_parent(ctx):
+	"""A guardian with a portal user and more than one active child at the school."""
+	for guardian in frappe.get_all("Guardian", filters={"user": ["is", "set"]}, fields=["name", "user"], order_by="name asc"):
+		children = frappe.get_all("Guardian Student Link", filters={"parent": guardian.name}, pluck="student")
+		if frappe.db.count("Student", {"name": ["in", children], "status": "Active"}) > 1:
+			return {"user": guardian.user, "guardian": guardian.name, "children": children}
+	return None
 
 
 def make_manifest(ctx):
@@ -1007,5 +1029,5 @@ def make_manifest(ctx):
 		"headmaster": ctx.headmaster,
 		"accountant": ctx.accountant,
 		"class_teachers": class_teachers,
-		"passwords_set_for": ctx.get("logins", []),
+		"demo_parent": get_demo_parent(ctx),
 	}

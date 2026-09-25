@@ -1,7 +1,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
-from smart_school.fees import get_class_for_term, get_fee_statement
+from smart_school.fees import get_class_for_term, get_fee_statement, is_charged
 from smart_school.notifications import send_notification
 
 
@@ -24,7 +24,15 @@ class FeePayment(Document):
 			"Fee Structure", filters={"class": self.get("class"), "term": self.term}, fields=["amount"]
 		)
 
-		if fee_structure:
+		exit_date = frappe.db.get_value("Student", self.student, "exit_date")
+		if not is_charged(frappe.db.get_value("Term", self.term, "start_date"), exit_date):
+			self.flags.not_charged = True
+			frappe.msgprint(
+				f"Mwanafunzi aliondoka tarehe {exit_date}, kabla term hii kuanza: hakuna ada ya term hii, "
+				"kiasi hiki kitahesabiwa kama salio la ziada.",
+				alert=True,
+			)
+		elif fee_structure:
 			self.amount_due = fee_structure[0].amount
 		else:
 			frappe.msgprint(
@@ -45,7 +53,11 @@ class FeePayment(Document):
 		paid_before = (row.total_paid + row.credit_applied) if row else 0
 
 		self.balance = max(outstanding_before - flt(self.amount_paid), 0)
-		self.overpayment = max(flt(self.amount_paid) - outstanding_before, 0) if self.amount_due else 0
+		self.overpayment = (
+			max(flt(self.amount_paid) - outstanding_before, 0)
+			if self.amount_due or self.flags.not_charged
+			else 0
+		)
 
 		total_paid_including_this = paid_before + flt(self.amount_paid)
 		if total_paid_including_this <= 0:

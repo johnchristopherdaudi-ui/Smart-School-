@@ -41,7 +41,8 @@ DEFAULTS = {
 	"alert_min_std": 3,
 	"alert_history_min_exams": 4,
 	"alert_class_z": 3.5,
-	"alert_student_z": 3.5,
+	"alert_class_min_diff": 10,
+	"alert_student_z": 4.5,
 	"alert_student_min_jump": 20,
 }
 
@@ -57,6 +58,7 @@ def get_settings():
 		min_std=flt(s.alert_min_std),
 		history_min_exams=cint(s.alert_history_min_exams) or DEFAULTS["alert_history_min_exams"],
 		class_z=flt(s.alert_class_z) or DEFAULTS["alert_class_z"],
+		class_min_diff=flt(s.alert_class_min_diff),
 		student_z=flt(s.alert_student_z) or DEFAULTS["alert_student_z"],
 		student_min_jump=flt(s.alert_student_min_jump),
 	)
@@ -142,11 +144,14 @@ def check_class_marks(marks, max_marks, settings):
 
 def check_class_average(mean, history, settings):
 	"""The class average (percentage) against the class averages of earlier exams of the subject
-	at the same level."""
+	at the same level. A MAD from a few exams can be tiny, so the average must also be a number of
+	points away from the usual one."""
 	if mean is None or len(history) < settings.history_min_exams:
 		return []
 	z = robust_z(mean, history)
 	if z is None or abs(z) <= settings.class_z:
+		return []
+	if abs(mean - statistics.median(history)) < settings.class_min_diff:
 		return []
 	return [
 		(
@@ -159,6 +164,7 @@ def check_class_average(mean, history, settings):
 				"history_exams": len(history),
 				"robust_z": flt(z, 2),
 				"threshold": settings.class_z,
+				"min_diff": settings.class_min_diff,
 			},
 		)
 	]

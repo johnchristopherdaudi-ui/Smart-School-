@@ -14,6 +14,7 @@
   "current_class",
   "current_section",
   "status",
+  "exit_date",
   "admission_date",
   "risk_score",
   "risk_level",
@@ -112,12 +113,20 @@
    "fieldtype": "Datetime",
    "label": "Risk Updated On",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.status != 'Active'",
+   "description": "The day the student left. Filled when the status changes from Active; terms that start on or after it are not charged, debts from before it remain.",
+   "fieldname": "exit_date",
+   "fieldtype": "Date",
+   "label": "Exit Date",
+   "no_copy": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-24 15:00:00.000000",
+ "modified": "2026-09-25 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Student",

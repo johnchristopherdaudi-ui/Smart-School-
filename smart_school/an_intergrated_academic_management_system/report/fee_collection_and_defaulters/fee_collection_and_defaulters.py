@@ -8,12 +8,13 @@ from smart_school.reports import FEE_ROLES
 
 
 def execute(filters=None):
-	"""Per active student: fees due, paid, credit from overpayments and what is still owed, from the same
-	fee statement the parent portal uses (credit pays the oldest debt first)."""
+	"""Per student: fees due, paid, credit from overpayments and what is still owed, from the same
+	fee statement the parent portal uses (credit pays the oldest debt first). Students who left are
+	listed only while they still owe fees from before they left."""
 	frappe.only_for(FEE_ROLES)
 	filters = frappe._dict(filters or {})
 
-	student_filters = {"status": "Active"}
+	student_filters = {}
 	if filters.get("class"):
 		student_filters["current_class"] = filters.get("class")
 
@@ -21,7 +22,7 @@ def execute(filters=None):
 	for student in frappe.get_all(
 		"Student",
 		filters=student_filters,
-		fields=["name", "full_name", "current_class"],
+		fields=["name", "full_name", "current_class", "status", "exit_date"],
 		order_by="current_class, full_name",
 	):
 		statement = get_fee_statement(student.name)
@@ -30,7 +31,7 @@ def execute(filters=None):
 			continue
 
 		outstanding = sum(r.remaining for r in rows)
-		if filters.only_defaulters and outstanding <= 0:
+		if (filters.only_defaulters or student.status != "Active") and outstanding <= 0:
 			continue
 
 		data.append(
@@ -38,6 +39,8 @@ def execute(filters=None):
 				"student": student.name,
 				"student_name": student.full_name,
 				"class": student.current_class,
+				"student_status": student.status,
+				"exit_date": student.exit_date,
 				"terms": ", ".join(r.term for r in rows),
 				"amount_due": sum(r.amount_due for r in rows),
 				"paid": sum(r.total_paid for r in rows),
@@ -56,6 +59,8 @@ def get_columns():
 		{"fieldname": "student", "label": "Student", "fieldtype": "Link", "options": "Student", "width": 140},
 		{"fieldname": "student_name", "label": "Student Name", "fieldtype": "Data", "width": 190},
 		{"fieldname": "class", "label": "Class", "fieldtype": "Link", "options": "Class", "width": 90},
+		{"fieldname": "student_status", "label": "Student Status", "fieldtype": "Data", "width": 110},
+		{"fieldname": "exit_date", "label": "Exit Date", "fieldtype": "Date", "width": 100},
 		{"fieldname": "terms", "label": "Terms", "fieldtype": "Data", "width": 160},
 		{"fieldname": "amount_due", "label": "Fees Due", "fieldtype": "Currency", "width": 120},
 		{"fieldname": "paid", "label": "Paid", "fieldtype": "Currency", "width": 120},

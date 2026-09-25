@@ -73,8 +73,9 @@ def get_fees_collected_this_term(filters=None):
 
 @frappe.whitelist()
 def get_outstanding_fees(filters=None):
+	"""Every student's balance: students who left still owe what was due before they left."""
 	frappe.only_for(FEE_ROLES)
-	students = frappe.get_all("Student", filters={"status": "Active"}, pluck="name")
+	students = frappe.get_all("Student", pluck="name")
 	return {"value": sum(get_fee_statement(s).balance for s in students), "fieldtype": "Currency"}
 
 

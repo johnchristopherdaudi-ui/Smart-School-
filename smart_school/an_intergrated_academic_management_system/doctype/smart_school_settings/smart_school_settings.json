@@ -35,6 +35,7 @@
   "marks_alerts_column_break",
   "alert_history_min_exams",
   "alert_class_z",
+  "alert_class_min_diff",
   "alert_student_z",
   "alert_student_min_jump"
  ],
@@ -242,7 +243,7 @@
    "non_negative": 1
   },
   {
-   "default": "3.5",
+   "default": "4.5",
    "description": "Robust z-score of a student's change against the class's median change",
    "fieldname": "alert_student_z",
    "fieldtype": "Float",
@@ -256,13 +257,21 @@
    "fieldtype": "Float",
    "label": "Student Change: Minimum Points",
    "non_negative": 1
+  },
+  {
+   "default": "10",
+   "description": "And the class average differs from the usual average by at least this many percentage points",
+   "fieldname": "alert_class_min_diff",
+   "fieldtype": "Float",
+   "label": "Class Average: Minimum Points",
+   "non_negative": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-25 14:00:00.000000",
+ "modified": "2026-09-25 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Smart School Settings",
