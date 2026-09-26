@@ -1,0 +1,150 @@
+{
+ "actions": [],
+ "creation": "2026-09-26 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "student_name",
+  "class",
+  "term",
+  "feature_term",
+  "column_break_main",
+  "probability",
+  "rule_score",
+  "rule_level",
+  "risk_model",
+  "reasons_section",
+  "reasons",
+  "contributions"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "student.full_name",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "class",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Class",
+   "options": "Class",
+   "read_only": 1
+  },
+  {
+   "fieldname": "term",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Predicted Term",
+   "options": "Term",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "feature_term",
+   "fieldtype": "Link",
+   "label": "From Results Of",
+   "options": "Term",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Chance of Division IV/0 or 3+ subjects with F in the predicted term",
+   "fieldname": "probability",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Probability",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_score",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rule-based Score",
+   "precision": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_level",
+   "fieldtype": "Select",
+   "label": "Rule-based Level",
+   "options": "\nLow\nMedium\nHigh",
+   "read_only": 1
+  },
+  {
+   "fieldname": "risk_model",
+   "fieldtype": "Link",
+   "label": "Risk Model",
+   "options": "Risk Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reasons_section",
+   "fieldtype": "Section Break",
+   "label": "Main Reasons"
+  },
+  {
+   "fieldname": "reasons",
+   "fieldtype": "Small Text",
+   "label": "Reasons",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contributions",
+   "fieldtype": "Code",
+   "label": "Contributions",
+   "options": "JSON",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-09-26 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Risk Prediction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Headmaster"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "student_name",
+ "track_changes": 0
+}

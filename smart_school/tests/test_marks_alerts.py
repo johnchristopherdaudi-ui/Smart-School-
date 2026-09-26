@@ -35,6 +35,7 @@ SETTINGS = frappe._dict(
 	class_min_diff=10,
 	student_z=3.5,
 	student_min_jump=20,
+	zero_drop_from=30,
 )
 NATURAL = [23, 37, 41, 48, 52, 56, 61, 64, 68, 73, 79, 88]
 SIX_ALIKE = [50] * 6 + [23, 37, 41, 62, 68, 79]
@@ -112,6 +113,26 @@ class TestStatistics(FrappeTestCase):
 		# A hard exam that lowers everyone raises nothing
 		hard = {f"S{i}": (60, 40 + v, "E0") for i, v in enumerate(variation + [1])}
 		self.assertEqual(ma.check_student_changes(hard, SETTINGS), [])
+
+	def test_dropped_to_zero_is_always_medium(self):
+		variation = [-3, -2, -1, 0, 1, 2, 3, -2, 1, 0]
+		pairs = {f"S{i}": (50, 50 + v, "E0") for i, v in enumerate(variation)}
+		pairs["ZERO"] = (59, 0, "E0")  # z about -3.9: below the statistical threshold on its own
+		pairs["WEAK"] = (20, 0, "E0")  # had less than 30%: not this rule
+		strict = frappe._dict(SETTINGS, student_z=100)
+		findings = ma.check_student_changes(pairs, strict)
+		self.assertEqual([(f[0], f[1], f[2]["student"]) for f in findings], [(ma.ZERO_DROP, "Medium", "ZERO")])
+
+		# One alert per student: not also an Unusual Student Change
+		findings = ma.check_student_changes(pairs, SETTINGS)
+		self.assertEqual([f[0] for f in findings if f[2]["student"] == "ZERO"], [ma.ZERO_DROP])
+		# Always, even in a class too small for statistics
+		small = {k: pairs[k] for k in ("S0", "S1", "ZERO")}
+		self.assertEqual(types(ma.check_student_changes(small, SETTINGS)), [ma.ZERO_DROP])
+		# Not when the whole class has many zeros: that alert covers them
+		self.assertEqual(
+			[f for f in ma.check_student_changes(pairs, strict, class_has_many_zeros=True)], []
+		)
 
 	def test_student_change_needs_a_minimum_jump(self):
 		changes = [-1, 1] * 5 + [0, 10]  # z of the last one is about 6.4, but it moved only 9.5 points more
@@ -257,6 +278,20 @@ class TestMarksAlerts(SchoolTestCase):
 			frappe.db.get_value("Exam", evidence["previous_exam"], "exam_name"), "_Test MA H4"
 		)
 		self.assertEqual(evidence["class_median_change"], 24)
+
+	def test_many_zeros_in_a_class_raise_one_alert_not_one_per_student(self):
+		earlier = make_exam("_Test MA Zero Before", "_Test T2", "_Test FORM 1")
+		self.enter(earlier, "_T HISTORY", NATURAL)
+		exam = make_exam("_Test MA Zero After", "_Test T3", "_Test FORM 1")
+		self.enter(exam, "_T HISTORY", [0, 0, 0, *NATURAL[3:]])  # three students who had 23-41% now have 0
+		ma.run_exam_checks(exam)
+		self.assertEqual([a.alert_type for a in self.alerts(exam, subject="_T HISTORY")], [ma.ZEROS])
+
+		self.amend(frappe.get_doc("Exam Result", {"exam": exam, "student": self.students[0], "docstatus": 1}), 30)
+		self.amend(frappe.get_doc("Exam Result", {"exam": exam, "student": self.students[1], "docstatus": 1}), 35)
+		ma.run_exam_checks(exam)  # one zero left: 8%, so no class alert, and the student gets their own
+		open_alerts = self.alerts(exam, subject="_T HISTORY", status="Open")
+		self.assertEqual([(a.alert_type, a.student) for a in open_alerts], [(ma.ZERO_DROP, self.students[2])])
 
 	def test_thresholds_come_from_settings(self):
 		exam = make_exam("_Test MA Settings", "_Test T3", "_Test FORM 1")

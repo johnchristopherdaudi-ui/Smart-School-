@@ -108,6 +108,14 @@ class TestDemoPlan(FrappeTestCase):
 		self.assertTrue(all(p["done"] for p in self.plan.plants))
 		swapped = next(p for p in self.plan.plants if p["alert_type"] == "Unusual Student Change")
 		self.assertEqual(len(set(swapped["students"])), 4)
+		zeroed = next(p for p in self.plan.plants if p["alert_type"] == "Dropped To Zero")
+		self.assertEqual(len(zeroed["students"]), 2)  # full-size school: enough students with 50%+
+		for student in zeroed["students"]:
+			self.assertEqual(self.plan.results[(zeroed["exam"], student, "BIOLOGY")][0], 0)
+		# the only exact zeros are planted: students who sat an exam get a few marks at least
+		planted = {(p["exam"], p["subject"]) for p in self.plan.plants}
+		natural_zeros = [k for k, (marks, _) in self.plan.results.items() if marks == 0 and (k[0], k[2]) not in planted]
+		self.assertEqual(natural_zeros, [])
 		early = dd.build_plan(seed=42, as_of=date(2025, 9, 1), students_per_form=10)
 		not_done = sorted(p["alert_type"] for p in early.plants if not p["done"])
 		self.assertEqual(not_done, ["Many Zero Marks", "Unusual Student Change"])  # Term 3 mid-term not sat yet

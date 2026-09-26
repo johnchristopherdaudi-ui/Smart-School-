@@ -46,6 +46,7 @@ TERM_DATES = {1: ((1, 8), (4, 3)), 2: ((4, 22), (7, 31)), 3: ((8, 19), (11, 27))
 MID_TERM_DAY = 35  # days after the term starts
 END_EXAM_DAYS_BEFORE_END = 10
 PUBLISH_AFTER_DAYS = 7
+PRESENT_FLOOR = 4  # percent: below this a student who sat the exam gets 2-8%; exact zeros are only planted
 EXAMS = {  # kind: (max marks, weight)
 	"mid": (50, 40),
 	"end": (100, 60),
@@ -413,6 +414,8 @@ def simulate_term(plan, rng, term, state, effects):
 					0,
 					100,
 				)
+				if pct < PRESENT_FLOOR:  # a student who sat the exam writes something: a few marks, not exactly 0
+					pct = rng.uniform(PRESENT_FLOOR / 2, PRESENT_FLOOR * 2)
 				marks = half_up(pct / 100 * exam["max_marks"])
 				plan.results[(exam["key"], key, subject)] = [marks, teacher_for(plan, subject, form)]
 
@@ -497,6 +500,7 @@ def plant_marks_problems(plan, rng):
 		("Many Zero Marks", 2, 3, "mid", 1, "BIOLOGY"),
 		("Unusual Class Average", 2, 2, "end", 4, "CHEMISTRY"),
 		("Unusual Student Change", 2, 3, "mid", 2, "MATHEMATICS"),
+		("Dropped To Zero", 2, 2, "end", 4, "BIOLOGY"),
 		("Entered By Unassigned User", 2, 2, "end", 3, "KISWAHILI"),
 		("Changed After Publish", 2, 2, "end", 1, "ENGLISH"),
 		("Results Unpublished", 2, 2, "end", 2, "PHYSICS"),
@@ -534,6 +538,13 @@ def plant_marks_problems(plan, rng):
 			for (weak, weak_row), (strong, strong_row) in zip(ranked[:2], ranked[-2:]):
 				weak_row[0], strong_row[0] = strong_row[0], weak_row[0]
 				plant["students"] += [weak, strong]
+		elif alert_type == "Dropped To Zero":
+			# Two marks never entered (typed as 0) for students who had at least 50% in the mid-term
+			earlier = dict(exam_rows(plan, exam_key(plan, year_offset, number, "mid", form), subject))
+			good = [(student, row) for student, row in rows if student in earlier and earlier[student][0] / EXAMS["mid"][0] >= 0.5]
+			for student, row in rng.sample(good, min(2, len(good))):
+				row[0] = 0
+				plant["students"].append(student)
 		elif alert_type == "Entered By Unassigned User":
 			other = teacher_for(plan, "HISTORY", form)
 			for _, row in rows:
@@ -591,16 +602,17 @@ def log(message):
 	print(f"[{datetime.now():%H:%M:%S}] {message}", flush=True)
 
 
-def write_plan(plan):
+def write_plan(plan, fees=True):
 	"""Save the plan through the app (doc API for people and payments, bulk insert for the large tables)
-	and return the manifest. Does not commit."""
+	and return the manifest. Does not commit. Tests that do not need fees can skip them (the slowest part)."""
 	ctx = frappe._dict(plan=plan, names=random.Random(f"{plan.seed}-names"))
 	try:
 		write_school(ctx)
 		write_people(ctx)
 		write_exams(ctx)
 		write_attendance_and_discipline(ctx)
-		write_fees(ctx)
+		if fees:
+			write_fees(ctx)
 		publish_exams(ctx)
 		apply_integrity_plants(ctx)
 		run_daily_jobs(ctx)
@@ -982,12 +994,16 @@ def make_manifest(ctx):
 	plants = []
 	for plant in plan.plants:
 		exam = ctx.exam_names[plant["exam"]]
-		filters = {"alert_type": plant["alert_type"], "exam": exam}
+		# Swapped marks send the strong students to 0: they get the Dropped To Zero alert instead
+		types = [plant["alert_type"]]
+		if plant["alert_type"] == "Unusual Student Change":
+			types.append("Dropped To Zero")
+		filters = {"alert_type": ["in", types], "exam": exam}
 		if plant["alert_type"] != "Results Unpublished":
 			filters["subject"] = plant["subject"]
 		found = frappe.get_all("Marks Alert", filters=filters, pluck="student")
 		students = [ctx.student_names[s] for s in plant["students"]]
-		if plant["alert_type"] == "Unusual Student Change":
+		if plant["alert_type"] in ("Unusual Student Change", "Dropped To Zero"):
 			detected = sorted(s for s in found if s in students) == sorted(students)
 		else:
 			detected = bool(found)

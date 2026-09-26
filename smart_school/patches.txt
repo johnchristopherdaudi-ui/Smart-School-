@@ -25,3 +25,5 @@ smart_school.patches.set_marks_alert_defaults
 smart_school.patches.set_first_published_on
 smart_school.patches.update_marks_alert_thresholds
 smart_school.patches.set_student_exit_dates
+# Runs set_marks_alert_defaults again so the new Dropped To Zero threshold gets its default
+smart_school.patches.set_marks_alert_defaults #zero_drop

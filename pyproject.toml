@@ -9,6 +9,7 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     # "frappe~=15.0.0" # Installed and managed by bench.
+    "scikit-learn>=1.5,<2",  # trains the early-warning risk model (predictions do not need it)
 ]
 
 [build-system]

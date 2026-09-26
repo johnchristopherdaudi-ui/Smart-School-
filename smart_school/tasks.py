@@ -60,6 +60,24 @@ def calculate_risk_score(student, term=None, settings=None):
 	if frappe.db.get_value("Student", student, "status") != "Active":
 		return None  # students who left get no risk prediction (their history still counts elsewhere)
 
+	score, level, parts = get_risk_score(student, term, settings)
+	frappe.db.set_value(
+		"Student",
+		student,
+		{
+			"risk_score": score,
+			"risk_level": level,
+			"risk_breakdown": json.dumps({"term": term.name, **parts}, default=str, indent=1),
+			"risk_updated_on": now_datetime(),
+		},
+		update_modified=False,
+	)
+	return score, level
+
+
+def get_risk_score(student, term, settings):
+	"""(score, level, parts) for any term, without saving: the daily job stores it for the current term,
+	the risk model compares itself with it on past terms. term needs name, start_date and end_date."""
 	parts = {}
 
 	# Attendance: Absent counts fully, Late half, Excused not at all
@@ -133,20 +151,7 @@ def calculate_risk_score(student, term=None, settings=None):
 		score += part["score"]
 	score = flt(min(score, 100), 1)
 
-	level = get_risk_level(score, settings)
-
-	frappe.db.set_value(
-		"Student",
-		student,
-		{
-			"risk_score": score,
-			"risk_level": level,
-			"risk_breakdown": json.dumps({"term": term.name, **parts}, default=str, indent=1),
-			"risk_updated_on": now_datetime(),
-		},
-		update_modified=False,
-	)
-	return score, level
+	return score, get_risk_level(score, settings), parts
 
 
 def get_risk_level(score, settings):

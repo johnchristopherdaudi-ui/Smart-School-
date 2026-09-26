@@ -43,7 +43,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Alert Type",
-   "options": "Many Identical Marks\nMany Zero Marks\nVery Low Spread\nMany Round Numbers\nUnusual Class Average\nUnusual Student Change\nChanged After Publish\nEntered By Unassigned User\nResults Unpublished",
+   "options": "Many Identical Marks\nMany Zero Marks\nVery Low Spread\nMany Round Numbers\nUnusual Class Average\nUnusual Student Change\nDropped To Zero\nChanged After Publish\nEntered By Unassigned User\nResults Unpublished",
    "read_only": 1,
    "reqd": 1
   },
@@ -195,7 +195,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-09-25 14:00:00.000000",
+ "modified": "2026-09-25 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Marks Alert",

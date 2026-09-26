@@ -21,11 +21,12 @@ LOW_SPREAD = "Very Low Spread"
 ROUND = "Many Round Numbers"
 CLASS_AVERAGE = "Unusual Class Average"
 STUDENT_CHANGE = "Unusual Student Change"
+ZERO_DROP = "Dropped To Zero"
 CHANGED_AFTER_PUBLISH = "Changed After Publish"
 UNASSIGNED = "Entered By Unassigned User"
 UNPUBLISHED = "Results Unpublished"
 
-STATISTICAL_TYPES = (IDENTICAL, ZEROS, LOW_SPREAD, ROUND, CLASS_AVERAGE, STUDENT_CHANGE)
+STATISTICAL_TYPES = (IDENTICAL, ZEROS, LOW_SPREAD, ROUND, CLASS_AVERAGE, STUDENT_CHANGE, ZERO_DROP)
 INTEGRITY_TYPES = (CHANGED_AFTER_PUBLISH, UNASSIGNED, UNPUBLISHED)
 
 MAD_SCALE = 0.6745  # makes the MAD comparable to a standard deviation for normally spread numbers
@@ -44,6 +45,7 @@ DEFAULTS = {
 	"alert_class_min_diff": 10,
 	"alert_student_z": 4.5,
 	"alert_student_min_jump": 20,
+	"alert_zero_drop_from": 30,
 }
 
 
@@ -61,6 +63,7 @@ def get_settings():
 		class_min_diff=flt(s.alert_class_min_diff),
 		student_z=flt(s.alert_student_z) or DEFAULTS["alert_student_z"],
 		student_min_jump=flt(s.alert_student_min_jump),
+		zero_drop_from=flt(s.alert_zero_drop_from) or DEFAULTS["alert_zero_drop_from"],
 	)
 
 
@@ -170,22 +173,46 @@ def check_class_average(mean, history, settings):
 	]
 
 
-def check_student_changes(pairs, settings):
+def check_student_changes(pairs, settings, class_has_many_zeros=False):
 	"""pairs: {student: (previous percentage, current percentage, previous exam)}.
 
-	Each student's change is compared with the class's median change (the residual), so a hard exam that
-	lowers everyone does not raise alerts; only students who moved much more than the class do."""
+	A student who had at least zero_drop_from % and now has 0 always gets a Medium "Dropped To Zero" alert
+	(often a missed exam or a mark not entered) instead of a statistical one, except when the whole class
+	has many zeros: that has its own alert.
+
+	Each other student's change is compared with the class's median change (the residual), so a hard exam
+	that lowers everyone does not raise alerts; only students who moved much more than the class do."""
+	findings, zero_drops = [], set()
+	for student, (previous, now, previous_exam) in pairs.items():
+		if now == 0 and previous >= settings.zero_drop_from:
+			zero_drops.add(student)
+			if not class_has_many_zeros:
+				findings.append(
+					(
+						ZERO_DROP,
+						"Medium",
+						{
+							"student": student,
+							"previous_exam": previous_exam,
+							"previous_percentage": flt(previous, 1),
+							"current_percentage": 0,
+							"zero_drop_from": settings.zero_drop_from,
+						},
+					)
+				)
+
 	if len(pairs) < settings.min_class_size:
-		return []
+		return findings
 
 	changes = {student: now - previous for student, (previous, now, _) in pairs.items()}
 	class_change = statistics.median(changes.values())
 	spread = mad(list(changes.values()))
 	if not spread:
-		return []
+		return findings
 
-	findings = []
 	for student, change in changes.items():
+		if student in zero_drops:
+			continue
 		residual = change - class_change
 		z = MAD_SCALE * residual / spread
 		if abs(z) <= settings.student_z or abs(residual) < settings.student_min_jump:
@@ -242,6 +269,7 @@ def run_statistical_checks(exam, results, settings):
 	found = set()
 	for subject, rows in by_subject.items():
 		findings = check_class_marks([flt(r.marks) for r in rows], exam.max_marks, settings)
+		many_zeros = any(alert_type == ZEROS for alert_type, _, _ in findings)
 		mean = None
 		if len(rows) >= settings.min_class_size:
 			mean = statistics.mean(flt(r.percentage) for r in rows)
@@ -251,7 +279,7 @@ def run_statistical_checks(exam, results, settings):
 			if (r.student, subject) in previous:
 				percentage, previous_exam = previous[(r.student, subject)]
 				pairs[r.student] = (percentage, flt(r.percentage), previous_exam)
-		findings += check_student_changes(pairs, settings)
+		findings += check_student_changes(pairs, settings, many_zeros)
 
 		for alert_type, severity, evidence in findings:
 			student = evidence.get("student")
@@ -602,6 +630,13 @@ def statistical_message(alert_type, subject, e):
 			f"The {subject} class average ({e['class_average']:g}%) is well {direction} the usual average "
 			f"for this Form ({e['history_median']:g}% over {e['history_exams']} earlier exams). "
 			"This may reflect the exam itself; please take a look."
+		)
+	if alert_type == ZERO_DROP:
+		name = frappe.db.get_value("Student", e["student"], "full_name") or e["student"]
+		previous = frappe.db.get_value("Exam", e["previous_exam"], "exam_name") or e["previous_exam"]
+		return (
+			f"{name} had {e['previous_percentage']:g}% in {subject} in {previous} and has 0 now. "
+			"If the student missed the exam, please confirm that 0 is the intended mark."
 		)
 	if alert_type == STUDENT_CHANGE:
 		name = frappe.db.get_value("Student", e["student"], "full_name") or e["student"]

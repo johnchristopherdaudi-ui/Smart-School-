@@ -161,6 +161,10 @@ scheduler_events = {
 		"smart_school.tasks.generate_performance_insights",
 		"smart_school.tasks.create_academic_records_for_ended_years",
 		"smart_school.marks_alerts.run_nightly_checks",
+		"smart_school.risk_model.refresh_predictions",
+	],
+	"weekly": [
+		"smart_school.risk_model.train_model",
 	],
 }
 

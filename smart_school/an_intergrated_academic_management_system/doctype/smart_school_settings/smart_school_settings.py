@@ -32,7 +32,7 @@ class SmartSchoolSettings(Document):
 			frappe.throw("Marks alerts: Minimum Class Size must be at least 3")
 		if (self.alert_history_min_exams or 0) < 3:
 			frappe.throw("Marks alerts: History: Minimum Exams must be at least 3")
-		for fieldname in ("alert_identical_share", "alert_zero_share", "alert_round_share"):
+		for fieldname in ("alert_identical_share", "alert_zero_share", "alert_round_share", "alert_zero_drop_from"):
 			if not 0 < (self.get(fieldname) or 0) <= 100:
 				frappe.throw(f"Marks alerts: {self.meta.get_label(fieldname)} must be between 1 and 100")
 		for fieldname in ("alert_class_z", "alert_student_z"):

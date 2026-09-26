@@ -1,0 +1,308 @@
+{
+ "actions": [],
+ "autoname": "RM-.#####",
+ "creation": "2026-09-26 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "status",
+  "decision",
+  "column_break_top",
+  "trained_on",
+  "trained_by",
+  "feature_set_version",
+  "features",
+  "data_section",
+  "train_terms",
+  "train_rows",
+  "train_positives",
+  "column_break_data",
+  "test_terms",
+  "test_rows",
+  "test_positives",
+  "final_rows",
+  "metrics_section",
+  "model_auc",
+  "rule_auc",
+  "auc_difference",
+  "auc_difference_ci_low",
+  "auc_difference_ci_high",
+  "bootstrap_resamples",
+  "bootstrap_seed",
+  "column_break_metrics",
+  "model_precision_top",
+  "rule_precision_top",
+  "model_recall_top",
+  "rule_recall_top",
+  "brier_score",
+  "base_rate",
+  "details_section",
+  "metrics_json",
+  "coefficients_section",
+  "intercept",
+  "coefficients",
+  "model_file"
+ ],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nRejected\nInsufficient Data\nRetired",
+   "read_only": 1
+  },
+  {
+   "fieldname": "decision",
+   "fieldtype": "Small Text",
+   "label": "Decision",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_top",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "trained_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Trained On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trained_by",
+   "fieldtype": "Link",
+   "label": "Trained By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "feature_set_version",
+   "fieldtype": "Int",
+   "label": "Feature Set Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "features",
+   "fieldtype": "Small Text",
+   "label": "Features (in order)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "data_section",
+   "fieldtype": "Section Break",
+   "label": "Data"
+  },
+  {
+   "fieldname": "train_terms",
+   "fieldtype": "Data",
+   "label": "Training Target Terms",
+   "read_only": 1
+  },
+  {
+   "fieldname": "train_rows",
+   "fieldtype": "Int",
+   "label": "Training Student-Terms",
+   "read_only": 1
+  },
+  {
+   "fieldname": "train_positives",
+   "fieldtype": "Int",
+   "label": "Training Positives",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_data",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "test_terms",
+   "fieldtype": "Data",
+   "label": "Test Target Terms",
+   "read_only": 1
+  },
+  {
+   "fieldname": "test_rows",
+   "fieldtype": "Int",
+   "label": "Test Student-Terms",
+   "read_only": 1
+  },
+  {
+   "fieldname": "test_positives",
+   "fieldtype": "Int",
+   "label": "Test Positives",
+   "read_only": 1
+  },
+  {
+   "description": "The active model is refitted on all student-terms after the test",
+   "fieldname": "final_rows",
+   "fieldtype": "Int",
+   "label": "Final Model Student-Terms",
+   "read_only": 1
+  },
+  {
+   "fieldname": "metrics_section",
+   "fieldtype": "Section Break",
+   "label": "Test Results (model against the rule-based score)"
+  },
+  {
+   "fieldname": "model_auc",
+   "fieldtype": "Float",
+   "label": "Model AUC",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_auc",
+   "fieldtype": "Float",
+   "label": "Rule-based AUC",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auc_difference",
+   "fieldtype": "Float",
+   "label": "AUC Difference",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auc_difference_ci_low",
+   "fieldtype": "Float",
+   "label": "AUC Difference: 95% CI Low",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auc_difference_ci_high",
+   "fieldtype": "Float",
+   "label": "AUC Difference: 95% CI High",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bootstrap_resamples",
+   "fieldtype": "Int",
+   "label": "Bootstrap Resamples",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bootstrap_seed",
+   "fieldtype": "Int",
+   "label": "Bootstrap Seed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_metrics",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "model_precision_top",
+   "fieldtype": "Percent",
+   "label": "Model Precision @ Top 10%",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_precision_top",
+   "fieldtype": "Percent",
+   "label": "Rule-based Precision @ Top 10%",
+   "read_only": 1
+  },
+  {
+   "fieldname": "model_recall_top",
+   "fieldtype": "Percent",
+   "label": "Model Recall @ Top 10%",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_recall_top",
+   "fieldtype": "Percent",
+   "label": "Rule-based Recall @ Top 10%",
+   "read_only": 1
+  },
+  {
+   "fieldname": "brier_score",
+   "fieldtype": "Float",
+   "label": "Brier Score",
+   "precision": "4",
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_rate",
+   "fieldtype": "Percent",
+   "label": "Test Base Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "metrics_json",
+   "fieldtype": "Code",
+   "label": "Confusion Matrices, Calibration and Fairness",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "coefficients_section",
+   "fieldtype": "Section Break",
+   "label": "Coefficients"
+  },
+  {
+   "fieldname": "intercept",
+   "fieldtype": "Float",
+   "label": "Intercept",
+   "precision": "4",
+   "read_only": 1
+  },
+  {
+   "fieldname": "coefficients",
+   "fieldtype": "Table",
+   "label": "Coefficients",
+   "options": "Risk Model Coefficient",
+   "read_only": 1
+  },
+  {
+   "description": "Private JSON file: features, scaler and coefficients",
+   "fieldname": "model_file",
+   "fieldtype": "Attach",
+   "label": "Model File",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-09-26 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
+ "name": "Risk Model",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Headmaster"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "status",
+ "track_changes": 1
+}

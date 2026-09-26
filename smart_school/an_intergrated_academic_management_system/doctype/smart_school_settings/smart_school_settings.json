@@ -37,7 +37,8 @@
   "alert_class_z",
   "alert_class_min_diff",
   "alert_student_z",
-  "alert_student_min_jump"
+  "alert_student_min_jump",
+  "alert_zero_drop_from"
  ],
  "fields": [
   {
@@ -265,13 +266,20 @@
    "fieldtype": "Float",
    "label": "Class Average: Minimum Points",
    "non_negative": 1
+  },
+  {
+   "default": "30",
+   "description": "A student who had at least this percentage in the previous exam and now has 0 always gets a Medium alert (unless the whole class has many zeros)",
+   "fieldname": "alert_zero_drop_from",
+   "fieldtype": "Percent",
+   "label": "Dropped To Zero: Previous Mark From (%)"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-25 17:00:00.000000",
+ "modified": "2026-09-25 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "AN INTERGRATED ACADEMIC MANAGEMENT SYSTEM",
  "name": "Smart School Settings",
